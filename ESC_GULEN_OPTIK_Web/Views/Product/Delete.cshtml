@@ -1,0 +1,26 @@
+@model ESC_GULEN_OPTIK_Web.Models.Product
+@{ ViewData["Title"] = "Delete Product"; }
+
+<h2 class="text-danger">Delete Product</h2>
+<hr />
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">⚠️ Confirm Deletion</div>
+    <div class="card-body">
+        <p>Are you sure you want to delete <strong>@Model.Brand - @Model.ProductType</strong>?</p>
+        
+        <dl class="row">
+            <dt class="col-sm-3">Price</dt>
+            <dd class="col-sm-9">@(Model.Price?.ToString("N2") ?? "-") ₺</dd>
+            <dt class="col-sm-3">Stock</dt>
+            <dd class="col-sm-9">@Model.StockQuantity</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="ProductID" />
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+

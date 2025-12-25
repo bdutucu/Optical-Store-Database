@@ -1,0 +1,56 @@
+﻿@{ ViewData["Title"] = "Dashboard"; }
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h3>@ViewBag.StaffCount</h3>
+                <small class="text-muted">Staff Members</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h3>@ViewBag.CustomerCount</h3>
+                <small class="text-muted">Customers</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h3>@ViewBag.ProductCount</h3>
+                <small class="text-muted">Products</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h3>@(Convert.ToDecimal(ViewBag.InventoryValue).ToString("N2")) ₺</h3>
+                <small class="text-muted">Inventory Value</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header"><strong>Quick Actions</strong></div>
+    <div class="card-body">
+        <a asp-controller="Staff" asp-action="Create" class="btn btn-primary">+ Add Staff</a>
+        <a asp-controller="Customer" asp-action="Create" class="btn btn-success">+ Register Customer</a>
+        <a asp-controller="Product" asp-action="Create" class="btn btn-warning">+ Add Product</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><strong>System Info</strong></div>
+    <div class="card-body">
+        <p><strong>Database:</strong> ESC_GULEN_OPTIK (MS SQL LocalDB)</p>
+        <p><strong>Framework:</strong> ASP.NET Core MVC + ADO.NET</p>
+        <p><strong>Features:</strong> Parameterized Queries, Stored Procedures, DataSet/DataAdapter Pattern</p>
+    </div>
+</div>

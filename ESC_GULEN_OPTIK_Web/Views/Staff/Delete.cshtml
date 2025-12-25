@@ -1,0 +1,26 @@
+@model ESC_GULEN_OPTIK_Web.Models.Staff
+@{ ViewData["Title"] = "Delete Staff"; }
+
+<h2 class="text-danger">Delete Staff</h2>
+<hr />
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">⚠️ Confirm Deletion</div>
+    <div class="card-body">
+        <p>Are you sure you want to delete <strong>@Model.FullName</strong>?</p>
+        
+        <dl class="row">
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+            <dt class="col-sm-3">Position</dt>
+            <dd class="col-sm-9">@(Model.Position ?? "-")</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="StaffID" />
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+

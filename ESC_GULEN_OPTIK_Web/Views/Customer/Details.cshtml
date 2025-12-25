@@ -1,0 +1,33 @@
+@model ESC_GULEN_OPTIK_Web.Models.Customer
+@{ ViewData["Title"] = "Customer Details"; }
+
+<h2>Customer Details</h2>
+<hr />
+
+<div class="card">
+    <div class="card-header"><strong>@Model.FullName</strong></div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">ID</dt>
+            <dd class="col-sm-9">@Model.CustomerID</dd>
+
+            <dt class="col-sm-3">National ID</dt>
+            <dd class="col-sm-9">@Model.NationalID</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@(Model.MailAddress ?? "-")</dd>
+
+            <dt class="col-sm-3">Insurance</dt>
+            <dd class="col-sm-9">@(Model.InsuranceInfo ?? "-")</dd>
+
+            <dt class="col-sm-3">Registered By</dt>
+            <dd class="col-sm-9">@Model.StaffName</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.CustomerID" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</div>
+

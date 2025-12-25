@@ -1,0 +1,107 @@
+@model List<ESC_GULEN_OPTIK_Web.Models.Product>
+@{ ViewData["Title"] = "Products"; }
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Product Catalog</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Add Product</a>
+</div>
+
+<!-- Filter by Type -->
+<div class="mb-3">
+    <div class="btn-group">
+        <a asp-action="Index" class="btn @(ViewBag.SelectedType == null ? "btn-primary" : "btn-outline-primary")">All</a>
+        @foreach (var t in (string[])ViewBag.ProductTypes)
+        {
+            <a asp-action="Index" asp-route-type="@t" 
+               class="btn @(ViewBag.SelectedType == t ? "btn-primary" : "btn-outline-primary")">@t</a>
+        }
+    </div>
+</div>
+
+<!-- Search with Stored Procedure -->
+<div class="card mb-3">
+    <div class="card-header">🔍 Advanced Search (Using Stored Procedure)</div>
+    <div class="card-body">
+        <form asp-action="Search" method="get" class="row g-2">
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach (var t in (string[])ViewBag.ProductTypes)
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="minPrice" class="form-control" placeholder="Min Price" />
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="maxPrice" class="form-control" placeholder="Max Price" />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Brand</th>
+                        <th>Type</th>
+                        <th>Model</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>@p.ProductID</td>
+                            <td>@p.Brand</td>
+                            <td><span class="badge bg-secondary">@p.ProductType</span></td>
+                            <td>@(p.ModelOrSerial ?? "-")</td>
+                            <td>
+                                @if (p.StockQuantity > 5)
+                                {
+                                    <span class="badge bg-success">@p.StockQuantity</span>
+                                }
+                                else if (p.StockQuantity > 0)
+                                {
+                                    <span class="badge bg-warning text-dark">@p.StockQuantity</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Out</span>
+                                }
+                            </td>
+                            <td>@(p.Price?.ToString("N2") ?? "-") ₺</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@p.ProductID" class="btn btn-sm btn-secondary">View</a>
+                                <a asp-action="Edit" asp-route-id="@p.ProductID" class="btn btn-sm btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@p.ProductID" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p>No products found.</p>
+                <a asp-action="Create" class="btn btn-primary">+ Add Product</a>
+            </div>
+        }
+    </div>
+</div>
+

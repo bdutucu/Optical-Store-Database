@@ -1,0 +1,52 @@
+@model List<ESC_GULEN_OPTIK_Web.Models.Staff>
+@{ ViewData["Title"] = "Staff"; }
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Staff Management</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Add Staff</a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Position</th>
+                        <th>Experience</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td>@s.StaffID</td>
+                            <td>@s.FullName</td>
+                            <td>@s.Email</td>
+                            <td>@(s.Position ?? "-")</td>
+                            <td><span class="badge bg-info">@(s.YearsOfExperience ?? 0) yrs</span></td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@s.StaffID" class="btn btn-sm btn-secondary">View</a>
+                                <a asp-action="Edit" asp-route-id="@s.StaffID" class="btn btn-sm btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@s.StaffID" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p>No staff found.</p>
+                <a asp-action="Create" class="btn btn-primary">+ Add Staff</a>
+            </div>
+        }
+    </div>
+</div>
+

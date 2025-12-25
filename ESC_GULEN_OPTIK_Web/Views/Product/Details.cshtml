@@ -1,0 +1,33 @@
+@model ESC_GULEN_OPTIK_Web.Models.Product
+@{ ViewData["Title"] = "Product Details"; }
+
+<h2>Product Details</h2>
+<hr />
+
+<div class="card">
+    <div class="card-header"><strong>@Model.Brand - @Model.ProductType</strong></div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">ID</dt>
+            <dd class="col-sm-9">@Model.ProductID</dd>
+
+            <dt class="col-sm-3">Brand</dt>
+            <dd class="col-sm-9">@Model.Brand</dd>
+
+            <dt class="col-sm-3">Type</dt>
+            <dd class="col-sm-9"><span class="badge bg-secondary">@Model.ProductType</span></dd>
+
+            <dt class="col-sm-3">Price</dt>
+            <dd class="col-sm-9">@(Model.Price?.ToString("N2") ?? "-") ₺</dd>
+
+            <dt class="col-sm-3">Stock</dt>
+            <dd class="col-sm-9">@Model.StockQuantity</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.ProductID" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</div>
+

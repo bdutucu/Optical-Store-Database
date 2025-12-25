@@ -1,0 +1,52 @@
+@model List<ESC_GULEN_OPTIK_Web.Models.Customer>
+@{ ViewData["Title"] = "Customers"; }
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Customer Management</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Register Customer</a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>National ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registered By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td>@c.CustomerID</td>
+                            <td>@c.NationalID</td>
+                            <td>@c.FullName</td>
+                            <td>@(c.MailAddress ?? "-")</td>
+                            <td>@c.StaffName</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@c.CustomerID" class="btn btn-sm btn-secondary">View</a>
+                                <a asp-action="Edit" asp-route-id="@c.CustomerID" class="btn btn-sm btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@c.CustomerID" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p>No customers found.</p>
+                <a asp-action="Create" class="btn btn-primary">+ Register Customer</a>
+            </div>
+        }
+    </div>
+</div>
+

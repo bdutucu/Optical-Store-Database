@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\ESC_GULEN_OPTIK_Web.props" />
+</Project>

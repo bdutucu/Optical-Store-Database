@@ -1,0 +1,58 @@
+@model ESC_GULEN_OPTIK_Web.Models.Customer
+@{ ViewData["Title"] = "Register Customer"; }
+
+<h2>Register New Customer</h2>
+<hr />
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NationalID" class="form-label"></label>
+                    <input asp-for="NationalID" class="form-control" placeholder="TC Kimlik No" />
+                    <span asp-validation-for="NationalID" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="RegisteredByStaffID" class="form-label"></label>
+                    <select asp-for="RegisteredByStaffID" asp-items="@ViewBag.StaffList" class="form-select">
+                        <option value="">Select Staff</option>
+                    </select>
+                    <span asp-validation-for="RegisteredByStaffID" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MailAddress" class="form-label"></label>
+                    <input asp-for="MailAddress" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="InsuranceInfo" class="form-label"></label>
+                    <input asp-for="InsuranceInfo" class="form-control" placeholder="SGK, Private, etc." />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Register</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

@@ -1,0 +1,46 @@
+@model ESC_GULEN_OPTIK_Web.Models.Product
+@{ ViewData["Title"] = "Edit Product"; }
+
+<h2>Edit Product</h2>
+<hr />
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <input type="hidden" asp-for="ProductID" />
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Brand" class="form-label"></label>
+                    <input asp-for="Brand" class="form-control" />
+                    <span asp-validation-for="Brand" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ProductTypeID" class="form-label">Product Type</label>
+                    <select asp-for="ProductTypeID" asp-items="@ViewBag.ProductTypeIds" class="form-select">
+                        <option value="">Select Type</option>
+                    </select>
+                    <span asp-validation-for="ProductTypeID" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="StockQuantity" class="form-label"></label>
+                    <input asp-for="StockQuantity" class="form-control" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Update</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+
