@@ -1,0 +1,110 @@
+@model ESC_GULEN_OPTIK_Web.Models.Payment
+@{
+    ViewData["Title"] = "Record Payment";
+    var transactions = ViewBag.Transactions as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var paymentTypes = ViewBag.PaymentTypes as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var remainingBalance = ViewBag.RemainingBalance as decimal? ?? 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-cash me-2"></i>Record Payment</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <strong>Payment Details</strong>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div class="mb-3">
+                        <label asp-for="TransactionID" class="form-label">Transaction *</label>
+                        <select asp-for="TransactionID" class="form-select" asp-items="transactions">
+                            <option value="">-- Select Transaction --</option>
+                        </select>
+                        <span asp-validation-for="TransactionID" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AmountPaid" class="form-label">Amount (₺) *</label>
+                        <input asp-for="AmountPaid" class="form-control form-control-lg" type="number" step="0.01" min="0.01" />
+                        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+                        @if (remainingBalance > 0)
+                        {
+                            <small class="text-muted">Remaining balance: <strong>@remainingBalance.ToString("N2") ₺</strong></small>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PaymentType" class="form-label">Payment Type *</label>
+                        <select asp-for="PaymentType" class="form-select" asp-items="paymentTypes" id="paymentTypeSelect"></select>
+                    </div>
+
+                    <!-- Cash specific fields -->
+                    <div id="cashFields" class="mb-3" style="display:none;">
+                        <label asp-for="ReceivedBy" class="form-label">Received By</label>
+                        <input asp-for="ReceivedBy" class="form-control" placeholder="Staff name receiving cash" />
+                        <small class="text-muted">Name of staff member receiving the cash payment</small>
+                    </div>
+
+                    <!-- Credit Card specific fields -->
+                    <div id="creditCardFields" class="mb-3" style="display:none;">
+                        <label asp-for="CardOwner" class="form-label">Card Owner Name</label>
+                        <input asp-for="CardOwner" class="form-control" placeholder="Name on the credit card" />
+                        <small class="text-muted">Name as it appears on the credit card</small>
+                    </div>
+
+                    <hr />
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-check-circle me-2"></i>Record Payment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <strong>💡 Payment Info</strong>
+            </div>
+            <div class="card-body">
+                <p><strong>Cash:</strong> For cash payments, enter the staff member's name who received the payment.</p>
+                <p><strong>Credit Card:</strong> For card payments, enter the cardholder's name for record keeping.</p>
+                <hr />
+                <p class="text-muted small">
+                    The system will automatically update the transaction's remaining balance after the payment is recorded.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('paymentTypeSelect').addEventListener('change', function() {
+            var type = this.value;
+            var cashFields = document.getElementById('cashFields');
+            var creditCardFields = document.getElementById('creditCardFields');
+            
+            // Hide all
+            cashFields.style.display = 'none';
+            creditCardFields.style.display = 'none';
+            
+            // Show based on type
+            if (type === 'Cash') {
+                cashFields.style.display = 'block';
+            } else if (type === 'CreditCard') {
+                creditCardFields.style.display = 'block';
+            }
+        });
+        
+        // Trigger on page load
+        document.getElementById('paymentTypeSelect').dispatchEvent(new Event('change'));
+    </script>
+}

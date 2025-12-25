@@ -45,6 +45,14 @@ namespace ESC_GULEN_OPTIK_Web.Models
 
         // Helper
         public string FullName => $"{FirstName} {LastName}";
+
+        // For login credentials (not stored in Staff table)
+        [Display(Name = "Password")]
+        [StringLength(100, MinimumLength = 4, ErrorMessage = "Password must be at least 4 characters")]
+        public string? Password { get; set; }
+
+        // For display - whether user has credentials
+        public bool HasCredentials { get; set; }
     }
 }
 

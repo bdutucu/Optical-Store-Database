@@ -10,6 +10,8 @@
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
             <input type="hidden" asp-for="ProductID" />
             
+            <!-- Basic Product Info -->
+            <h5 class="mb-3">📦 Basic Information</h5>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="Brand" class="form-label"></label>
@@ -18,7 +20,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="ProductTypeID" class="form-label">Product Type</label>
-                    <select asp-for="ProductTypeID" asp-items="@ViewBag.ProductTypeIds" class="form-select">
+                    <select asp-for="ProductTypeID" asp-items="@ViewBag.ProductTypeIds" class="form-select" id="productTypeSelect">
                         <option value="">Select Type</option>
                     </select>
                     <span asp-validation-for="ProductTypeID" class="text-danger"></span>
@@ -28,7 +30,10 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="Price" class="form-label"></label>
-                    <input asp-for="Price" class="form-control" />
+                    <div class="input-group">
+                        <input asp-for="Price" class="form-control" />
+                        <span class="input-group-text">₺</span>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="StockQuantity" class="form-label"></label>
@@ -36,11 +41,185 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-success">Update</button>
+            <!-- Subtype Fields -->
+            <hr />
+            <h5 class="mb-3">🔧 Product Details</h5>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ModelOrSerial" class="form-label">Model / Serial Number</label>
+                    <input asp-for="ModelOrSerial" class="form-control" placeholder="Model or Serial No" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ColorInfo" class="form-label">Color / Color Code</label>
+                    <input asp-for="ColorInfo" class="form-control" placeholder="e.g., Black, C01" />
+                </div>
+            </div>
+            
+            <!-- Sunglasses specific -->
+            <div class="row" id="sunglassesFields" style="display:none;">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Size" class="form-label">Size</label>
+                    <input asp-for="Size" class="form-control" placeholder="e.g., 52-18-140" />
+                </div>
+            </div>
+            
+            <!-- Lens specific -->
+            <div id="lensFields" style="display:none;">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="LensType" class="form-label">Lens Type</label>
+                        <select asp-for="LensType" class="form-select">
+                            <option value="">Select Type</option>
+                            <option value="Progressive">Progressive</option>
+                            <option value="Single Vision">Single Vision</option>
+                            <option value="Bifocal">Bifocal</option>
+                            <option value="Toric">Toric</option>
+                            <option value="Multifocal">Multifocal</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <h6 class="mt-3">👁️ Eye Measurements (Optional)</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-2">Right Eye</p>
+                        <div class="row">
+                            <div class="col-4 mb-2">
+                                <label asp-for="Right_SPH" class="form-label small">SPH</label>
+                                <input asp-for="Right_SPH" class="form-control form-control-sm" step="0.25" />
+                            </div>
+                            <div class="col-4 mb-2">
+                                <label asp-for="Right_CYL" class="form-label small">CYL</label>
+                                <input asp-for="Right_CYL" class="form-control form-control-sm" step="0.25" />
+                            </div>
+                            <div class="col-4 mb-2">
+                                <label asp-for="Right_AX" class="form-label small">Axis</label>
+                                <input asp-for="Right_AX" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-muted mb-2">Left Eye</p>
+                        <div class="row">
+                            <div class="col-4 mb-2">
+                                <label asp-for="Left_SPH" class="form-label small">SPH</label>
+                                <input asp-for="Left_SPH" class="form-control form-control-sm" step="0.25" />
+                            </div>
+                            <div class="col-4 mb-2">
+                                <label asp-for="Left_CYL" class="form-label small">CYL</label>
+                                <input asp-for="Left_CYL" class="form-control form-control-sm" step="0.25" />
+                            </div>
+                            <div class="col-4 mb-2">
+                                <label asp-for="Left_AX" class="form-label small">Axis</label>
+                                <input asp-for="Left_AX" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials (Only for FRAME and SUNGLASSES) -->
+            <div id="materialSection" style="display:none;">
+                <hr />
+                <h5 class="mb-3">🧱 Materials (Multiple Selection)</h5>
+                
+                @if (Model.CurrentMaterials != null && Model.CurrentMaterials.Any())
+                {
+                    <div class="alert alert-info">
+                        <strong>Current Materials:</strong>
+                        <ul class="mb-0">
+                            @foreach (var mat in Model.CurrentMaterials)
+                            {
+                                <li>@mat.MaterialName @(string.IsNullOrEmpty(mat.ComponentPart) ? "" : $"({mat.ComponentPart})")</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                
+                <p class="text-muted small">Select one or more materials for this product</p>
+                
+                <div class="row">
+                    @if (ViewBag.Materials != null)
+                    {
+                        var materials = (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Materials;
+                        var selectedIds = Model.MaterialIDs ?? new List<int>();
+                        
+                        foreach (var mat in materials)
+                        {
+                            var isChecked = selectedIds.Contains(int.Parse(mat.Value));
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input material-checkbox" type="checkbox" 
+                                           name="SelectedMaterials" value="@mat.Value" id="mat_@mat.Value"
+                                           @(isChecked ? "checked" : "")>
+                                    <label class="form-check-label" for="mat_@mat.Value">
+                                        @mat.Text
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                
+                <div class="mt-3" id="componentPartsSection">
+                    <label class="form-label">Component Parts (comma-separated, in order of selection)</label>
+                    @{
+                        var partsValue = Model.MaterialParts != null ? string.Join(",", Model.MaterialParts) : "";
+                    }
+                    <input type="text" name="MaterialPartNames" class="form-control" 
+                           placeholder="e.g., Frame, Temple, Bridge" value="@partsValue" />
+                    <small class="text-muted">Enter part names separated by commas, matching the order of selected materials</small>
+                </div>
+            </div>
+
+            <hr />
+            <button type="submit" class="btn btn-success">Update Product</button>
             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </div>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
-
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateFormFields() {
+            var typeId = document.getElementById('productTypeSelect').value;
+            var sunglassesFields = document.getElementById('sunglassesFields');
+            var lensFields = document.getElementById('lensFields');
+            var materialSection = document.getElementById('materialSection');
+            
+            // Hide all optional sections
+            sunglassesFields.style.display = 'none';
+            lensFields.style.display = 'none';
+            materialSection.style.display = 'none';
+            
+            // Show based on type (1=FRAME, 2=SUNGLASSES, 3=CONTACTLENS, 4=LENS)
+            if (typeId == '1') { // FRAME
+                materialSection.style.display = 'block';
+            } else if (typeId == '2') { // SUNGLASSES
+                sunglassesFields.style.display = 'flex';
+                materialSection.style.display = 'block';
+            } else if (typeId == '3' || typeId == '4') { // CONTACTLENS or LENS
+                lensFields.style.display = 'block';
+                // NO material section for lenses
+            }
+        }
+        
+        // Toggle component parts visibility based on checkbox selection
+        function updateComponentPartsVisibility() {
+            var anyChecked = document.querySelectorAll('.material-checkbox:checked').length > 0;
+            document.getElementById('componentPartsSection').style.display = anyChecked ? 'block' : 'none';
+        }
+        
+        document.querySelectorAll('.material-checkbox').forEach(function(cb) {
+            cb.addEventListener('change', updateComponentPartsVisibility);
+        });
+        
+        document.getElementById('productTypeSelect').addEventListener('change', updateFormFields);
+        
+        // Trigger on page load
+        updateFormFields();
+        updateComponentPartsVisibility();
+    </script>
+}

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ESC_GULEN_OPTIK_Web.Data;
 using ESC_GULEN_OPTIK_Web.Models;
+using ESC_GULEN_OPTIK_Web.Filters;
 using System.Data;
 
 namespace ESC_GULEN_OPTIK_Web.Controllers
@@ -8,7 +9,9 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
     /// <summary>
     /// Staff Controller - CRUD operations for Staff
     /// Uses instructor's DBConnection pattern
+    /// ADMIN ONLY - Only managers can access staff management
     /// </summary>
+    [ServiceFilter(typeof(AdminAuthorizationFilter))]
     public class StaffController : Controller
     {
         private readonly DBConnection _dbcon;
@@ -24,17 +27,22 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         /// </summary>
         public IActionResult Index()
         {
-            // Simple SELECT query (like instructor's pattern)
-            string sqlstr = "SELECT StaffID, FirstName, LastName, Email, Salary, Position, " +
-                           "DateOfBirth, Age, PhoneNumber, JobStartDate, YearsOfExperience " +
-                           "FROM Staff ORDER BY LastName, FirstName";
+            // Get staff with credential status
+            string sqlstr = @"SELECT S.StaffID, S.FirstName, S.LastName, S.Email, S.Salary, S.Position, 
+                             S.DateOfBirth, S.Age, S.PhoneNumber, S.JobStartDate, S.YearsOfExperience,
+                             CASE WHEN SC.StaffID IS NOT NULL THEN 1 ELSE 0 END AS HasCredentials
+                             FROM Staff S
+                             LEFT JOIN StaffCredentials SC ON S.StaffID = SC.StaffID
+                             ORDER BY S.LastName, S.FirstName";
 
             DataSet ds = _dbcon.getSelect(sqlstr);
             
             var staffList = new List<Staff>();
             foreach (DataRow row in ds.Tables[0].Rows)
             {
-                staffList.Add(MapRowToStaff(row));
+                var staff = MapRowToStaff(row);
+                staff.HasCredentials = Convert.ToInt32(row["HasCredentials"]) == 1;
+                staffList.Add(staff);
             }
 
             return View(staffList);
@@ -46,8 +54,11 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         /// </summary>
         public IActionResult Details(int id)
         {
-            // Parameterized query
-            string sqlstr = "SELECT * FROM Staff WHERE StaffID = @id";
+            string sqlstr = @"SELECT S.*, 
+                             CASE WHEN SC.StaffID IS NOT NULL THEN 1 ELSE 0 END AS HasCredentials
+                             FROM Staff S
+                             LEFT JOIN StaffCredentials SC ON S.StaffID = SC.StaffID
+                             WHERE S.StaffID = @id";
             DataSet ds = _dbcon.getSelectWithParams(sqlstr, ("@id", id));
 
             if (ds.Tables[0].Rows.Count == 0)
@@ -57,6 +68,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
             }
 
             var staff = MapRowToStaff(ds.Tables[0].Rows[0]);
+            staff.HasCredentials = Convert.ToInt32(ds.Tables[0].Rows[0]["HasCredentials"]) == 1;
             return View(staff);
         }
 
@@ -77,6 +89,9 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Staff staff)
         {
+            // Remove Password from validation since it's optional for model but we'll use it
+            ModelState.Remove("Password");
+            
             if (!ModelState.IsValid)
                 return View(staff);
 
@@ -100,7 +115,20 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
 
             if (newId > 0)
             {
-                TempData["Success"] = $"Staff created with ID: {newId}";
+                // If password is provided, create credentials
+                if (!string.IsNullOrWhiteSpace(staff.Password))
+                {
+                    string credSql = "INSERT INTO StaffCredentials (StaffID, PasswordHash) VALUES (@StaffID, @Password)";
+                    _dbcon.executeWithParams(credSql, 
+                        ("@StaffID", newId), 
+                        ("@Password", staff.Password)
+                    );
+                    TempData["Success"] = $"Staff created with ID: {newId} (with login credentials)";
+                }
+                else
+                {
+                    TempData["Success"] = $"Staff created with ID: {newId} (no login credentials - cannot login)";
+                }
                 return RedirectToAction(nameof(Index));
             }
             else
@@ -116,7 +144,11 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         /// </summary>
         public IActionResult Edit(int id)
         {
-            string sqlstr = "SELECT * FROM Staff WHERE StaffID = @id";
+            string sqlstr = @"SELECT S.*, 
+                             CASE WHEN SC.StaffID IS NOT NULL THEN 1 ELSE 0 END AS HasCredentials
+                             FROM Staff S
+                             LEFT JOIN StaffCredentials SC ON S.StaffID = SC.StaffID
+                             WHERE S.StaffID = @id";
             DataSet ds = _dbcon.getSelectWithParams(sqlstr, ("@id", id));
 
             if (ds.Tables[0].Rows.Count == 0)
@@ -126,6 +158,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
             }
 
             var staff = MapRowToStaff(ds.Tables[0].Rows[0]);
+            staff.HasCredentials = Convert.ToInt32(ds.Tables[0].Rows[0]["HasCredentials"]) == 1;
             return View(staff);
         }
 
@@ -140,6 +173,8 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
             if (id != staff.StaffID)
                 return BadRequest();
 
+            ModelState.Remove("Password");
+            
             if (!ModelState.IsValid)
                 return View(staff);
 
@@ -169,7 +204,38 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
 
             if (success)
             {
-                TempData["Success"] = "Staff updated successfully.";
+                // If password is provided, update/create credentials
+                if (!string.IsNullOrWhiteSpace(staff.Password))
+                {
+                    // Check if credentials exist
+                    DataSet dsCheck = _dbcon.getSelectWithParams(
+                        "SELECT 1 FROM StaffCredentials WHERE StaffID = @id", 
+                        ("@id", staff.StaffID));
+                    
+                    if (dsCheck.Tables[0].Rows.Count > 0)
+                    {
+                        // Update existing
+                        _dbcon.executeWithParams(
+                            "UPDATE StaffCredentials SET PasswordHash = @Password WHERE StaffID = @StaffID",
+                            ("@StaffID", staff.StaffID),
+                            ("@Password", staff.Password)
+                        );
+                    }
+                    else
+                    {
+                        // Create new
+                        _dbcon.executeWithParams(
+                            "INSERT INTO StaffCredentials (StaffID, PasswordHash) VALUES (@StaffID, @Password)",
+                            ("@StaffID", staff.StaffID),
+                            ("@Password", staff.Password)
+                        );
+                    }
+                    TempData["Success"] = "Staff updated successfully (password updated).";
+                }
+                else
+                {
+                    TempData["Success"] = "Staff updated successfully.";
+                }
                 return RedirectToAction(nameof(Index));
             }
             else
@@ -206,7 +272,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            // DELETE with parameterized query
+            // StaffCredentials has CASCADE DELETE, so it will be deleted automatically
             string sqlstr = "DELETE FROM Staff WHERE StaffID = @id";
             bool success = _dbcon.executeWithParams(sqlstr, ("@id", id));
 
@@ -244,4 +310,3 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         }
     }
 }
-

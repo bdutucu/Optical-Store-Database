@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<h2 class="mb-4"><i class="bi bi-graph-up me-2"></i>Reports Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-month text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Monthly Financial Report</h5>
+                <p class="card-text text-muted">View revenue, cash inflow, and pending receivables by month.</p>
+                <a asp-action="MonthlyFinancial" class="btn btn-primary">
+                    <i class="bi bi-arrow-right me-1"></i>View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-success">
+            <div class="card-body text-center">
+                <i class="bi bi-people text-success" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Staff Performance</h5>
+                <p class="card-text text-muted">Analyze staff sales performance and revenue generation.</p>
+                <a asp-action="StaffPerformance" class="btn btn-success">
+                    <i class="bi bi-arrow-right me-1"></i>View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-warning">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Customer Balances</h5>
+                <p class="card-text text-muted">View customers with outstanding balances.</p>
+                <a asp-action="CustomerBalances" class="btn btn-warning">
+                    <i class="bi bi-arrow-right me-1"></i>View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-info">
+            <div class="card-body text-center">
+                <i class="bi bi-box-seam text-info" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Inventory Report</h5>
+                <p class="card-text text-muted">Complete stock count and total inventory value.</p>
+                <a asp-action="Inventory" class="btn btn-info">
+                    <i class="bi bi-arrow-right me-1"></i>View Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-secondary">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-history text-secondary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Daily Summary</h5>
+                <p class="card-text text-muted">View daily transaction and payment summary.</p>
+                <a asp-action="DailySummary" class="btn btn-secondary">
+                    <i class="bi bi-arrow-right me-1"></i>View Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+

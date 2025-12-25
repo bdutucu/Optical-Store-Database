@@ -1,0 +1,76 @@
+@model List<dynamic>
+@{
+    ViewData["Title"] = "Staff Performance Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people me-2"></i>Staff Performance Report</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Reports
+    </a>
+</div>
+
+<!-- Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Start Date</label>
+                <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End Date</label>
+                <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>Generate Report
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="card">
+    <div class="card-body">
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info">No data found for the selected period.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Staff Member</th>
+                            <th class="text-center">Total Transactions</th>
+                            <th class="text-end">Revenue Generated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int rank = 1; }
+                        @foreach (var item in Model)
+                        {
+                            <tr class="@(rank == 1 ? "table-success" : "")">
+                                <td>
+                                    @if (rank == 1) { <span class="badge bg-warning text-dark">🥇</span> }
+                                    else if (rank == 2) { <span class="badge bg-secondary">🥈</span> }
+                                    else if (rank == 3) { <span class="badge bg-danger">🥉</span> }
+                                    else { <span class="text-muted">#@rank</span> }
+                                </td>
+                                <td><strong>@item.StaffName</strong></td>
+                                <td class="text-center">@item.TotalTransactions</td>
+                                <td class="text-end fw-bold text-success">@item.TotalRevenueGenerated.ToString("N2") ₺</td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

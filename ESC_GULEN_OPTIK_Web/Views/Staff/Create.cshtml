@@ -1,7 +1,7 @@
 @model ESC_GULEN_OPTIK_Web.Models.Staff
 @{ ViewData["Title"] = "Add Staff"; }
 
-<h2>Add New Staff</h2>
+<h2><i class="bi bi-person-plus me-2"></i>Add New Staff</h2>
 <hr />
 
 <div class="card">
@@ -44,6 +44,7 @@
                         <option>Sales</option>
                         <option>Technician</option>
                     </select>
+                    <small class="text-muted">Note: "Manager" position grants admin access</small>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="Salary" class="form-label"></label>
@@ -64,11 +65,35 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-success">Save</button>
+            <!-- Login Credentials Section -->
+            <div class="card bg-light mb-3">
+                <div class="card-header">
+                    <strong><i class="bi bi-key me-2"></i>Login Credentials</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="Enter password for login" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                If left empty, this staff member will NOT be able to login to the system.
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Login Email</label>
+                            <input class="form-control" disabled value="(Uses Email field above)" />
+                            <small class="text-muted">Staff will login using their email address</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success"><i class="bi bi-check-circle me-1"></i>Save</button>
             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </div>
 
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }
-

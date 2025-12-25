@@ -18,6 +18,18 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Bugra\Desktop\DATABASE WEB\ESC_GULEN_OPTIK_Web
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Auth/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Auth/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Auth/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Customer/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -46,6 +58,18 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Payment/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Payment/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Payment/QuickPay.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFxRdWlja1BheS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Product/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -64,6 +88,46 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Product/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Reports/CustomerBalances.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xDdXN0b21lckJhbGFuY2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Reports/DailySummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xEYWlseVN1bW1hcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Reports/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Reports/Inventory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xJbnZlbnRvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Reports/MonthlyFinancial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xNb250aGx5RmluYW5jaWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Reports/StaffPerformance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xTdGFmZlBlcmZvcm1hbmNlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Sales/CreateRepair.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FsZXNcQ3JlYXRlUmVwYWlyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Sales/CreateSale.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FsZXNcQ3JlYXRlU2FsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Sales/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FsZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Sales/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FsZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Bugra/Desktop/DATABASE WEB/ESC_GULEN_OPTIK_Web/Views/Shared/Error.cshtml]

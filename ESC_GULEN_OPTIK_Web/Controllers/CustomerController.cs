@@ -2,13 +2,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ESC_GULEN_OPTIK_Web.Data;
 using ESC_GULEN_OPTIK_Web.Models;
+using ESC_GULEN_OPTIK_Web.Filters;
 using System.Data;
 
 namespace ESC_GULEN_OPTIK_Web.Controllers
 {
     /// <summary>
     /// Customer Controller - CRUD operations for Customer
+    /// Accessible by all logged-in staff
     /// </summary>
+    [ServiceFilter(typeof(AuthenticationFilter))]
     public class CustomerController : Controller
     {
         private readonly DBConnection _dbcon;

@@ -1,0 +1,73 @@
+@model ESC_GULEN_OPTIK_Web.Models.CreateRepairViewModel
+@{
+    ViewData["Title"] = "Create Repair Order";
+    var customers = ViewBag.Customers as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-tools me-2"></i>Create Repair Order</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <strong>Repair Details</strong>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateRepair" method="post">
+                    <div class="mb-3">
+                        <label asp-for="CustomerID" class="form-label">Customer *</label>
+                        <select asp-for="CustomerID" class="form-select" asp-items="customers">
+                            <option value="">-- Select Customer --</option>
+                        </select>
+                        <span asp-validation-for="CustomerID" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Repair Description *</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" 
+                                  placeholder="Describe the repair work needed..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="RepairCost" class="form-label">Repair Cost (₺) *</label>
+                            <input asp-for="RepairCost" class="form-control" type="number" step="0.01" min="0.01" />
+                            <span asp-validation-for="RepairCost" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EstimatedCompletion" class="form-label">Estimated Completion</label>
+                            <input asp-for="EstimatedCompletion" class="form-control" type="date" />
+                        </div>
+                    </div>
+
+                    <hr />
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <i class="bi bi-check-circle me-2"></i>Create Repair Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle me-2"></i>Repair Process</h5>
+                <ol class="mb-0">
+                    <li>Select the customer</li>
+                    <li>Describe the repair needed</li>
+                    <li>Enter the repair cost</li>
+                    <li>Set estimated completion date</li>
+                    <li>Collect payment when complete</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+

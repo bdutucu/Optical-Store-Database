@@ -1,0 +1,180 @@
+@model ESC_GULEN_OPTIK_Web.Models.Transaction
+@{
+    ViewData["Title"] = "Transaction Details";
+    var saleItems = ViewBag.SaleItems as List<ESC_GULEN_OPTIK_Web.Models.SaleItem> ?? new List<ESC_GULEN_OPTIK_Web.Models.SaleItem>();
+    var payments = ViewBag.Payments as List<ESC_GULEN_OPTIK_Web.Models.Payment> ?? new List<ESC_GULEN_OPTIK_Web.Models.Payment>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="bi bi-receipt me-2"></i>Transaction #@Model.TransactionID
+        @if (Model.TransactionTypeID == 1)
+        {
+            <span class="badge bg-success ms-2">SALE</span>
+        }
+        else
+        {
+            <span class="badge bg-warning text-dark ms-2">REPAIR</span>
+        }
+    </h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<div class="row">
+    <!-- Transaction Info -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <strong>Transaction Information</strong>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted" style="width: 40%">Customer:</td>
+                        <td><strong>@Model.CustomerName</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Processed By:</td>
+                        <td>@Model.StaffName</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Date:</td>
+                        <td>@Model.TransactionDate.ToString("dd MMMM yyyy, HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Total Amount:</td>
+                        <td><strong class="text-primary fs-5">@Model.TotalAmount.ToString("N2") ₺</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Remaining Balance:</td>
+                        <td>
+                            @if (Model.RemainingBalance > 0)
+                            {
+                                <strong class="text-danger fs-5">@Model.RemainingBalance.ToString("N2") ₺</strong>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success fs-6">PAID IN FULL</span>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            @if (Model.RemainingBalance > 0)
+            {
+                <div class="card-footer">
+                    <a asp-controller="Payment" asp-action="QuickPay" asp-route-id="@Model.TransactionID" 
+                       class="btn btn-success w-100">
+                        <i class="bi bi-cash me-2"></i>Receive Payment
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <strong>Payment History</strong>
+            </div>
+            <div class="card-body">
+                @if (payments.Count == 0)
+                {
+                    <p class="text-muted">No payments recorded yet.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in payments)
+                            {
+                                <tr>
+                                    <td>@payment.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@payment.PaymentType</td>
+                                    <td class="text-end text-success fw-bold">@payment.AmountPaid.ToString("N2") ₺</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-success">
+                                <td colspan="2"><strong>Total Paid:</strong></td>
+                                <td class="text-end"><strong>@payments.Sum(p => p.AmountPaid).ToString("N2") ₺</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sale Items (if SALE) -->
+@if (Model.TransactionTypeID == 1 && saleItems.Count > 0)
+{
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <strong>Sale Items</strong>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Tax Rate</th>
+                            <th class="text-end">Subtotal</th>
+                            <th class="text-end">Tax</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in saleItems)
+                        {
+                            <tr>
+                                <td><strong>@item.ProductName</strong></td>
+                                <td><span class="badge bg-secondary">@item.ProductType</span></td>
+                                <td class="text-center">@item.Quantity</td>
+                                <td class="text-end">@item.UnitPrice.ToString("N2") ₺</td>
+                                <td class="text-end">%@item.TaxRate.ToString("N0")</td>
+                                <td class="text-end">@item.SubTotal.ToString("N2") ₺</td>
+                                <td class="text-end text-muted">@item.TaxAmount.ToString("N2") ₺</td>
+                                <td class="text-end fw-bold">@item.LineTotal.ToString("N2") ₺</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="5"></td>
+                            <td class="text-end"><strong>Subtotal:</strong></td>
+                            <td colspan="2" class="text-end">@saleItems.Sum(i => i.SubTotal).ToString("N2") ₺</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5"></td>
+                            <td class="text-end"><strong>Tax:</strong></td>
+                            <td colspan="2" class="text-end">@saleItems.Sum(i => i.TaxAmount).ToString("N2") ₺</td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td colspan="5"></td>
+                            <td class="text-end"><strong>Grand Total:</strong></td>
+                            <td colspan="2" class="text-end fs-5"><strong>@saleItems.Sum(i => i.LineTotal).ToString("N2") ₺</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+

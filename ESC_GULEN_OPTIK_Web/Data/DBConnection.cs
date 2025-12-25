@@ -12,13 +12,19 @@ namespace ESC_GULEN_OPTIK_Web.Data
     public class DBConnection
     {
         private readonly string _connectionString;
-        private SqlConnection _con;
 
         public DBConnection(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("conStr") 
                 ?? throw new InvalidOperationException("Connection string 'conStr' not found.");
-            _con = new SqlConnection(_connectionString);
+        }
+
+        /// <summary>
+        /// Creates a new connection for each operation to avoid connection state issues
+        /// </summary>
+        private SqlConnection CreateConnection()
+        {
+            return new SqlConnection(_connectionString);
         }
 
         /// <summary>
@@ -27,20 +33,12 @@ namespace ESC_GULEN_OPTIK_Web.Data
         /// </summary>
         public DataSet getSelect(string sqlstr)
         {
-            try
-            {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                throw;
-            }
-
             DataSet ds = new DataSet();
-            SqlDataAdapter da = new SqlDataAdapter(sqlstr, _connectionString);
-            da.Fill(ds);
-            _con.Close();
+            using (SqlConnection con = CreateConnection())
+            {
+                SqlDataAdapter da = new SqlDataAdapter(sqlstr, con);
+                da.Fill(ds);
+            }
             return ds;
         }
 
@@ -50,27 +48,19 @@ namespace ESC_GULEN_OPTIK_Web.Data
         /// </summary>
         public DataSet getSelectWithParams(string sqlstr, params (string name, object value)[] parameters)
         {
-            try
-            {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                throw;
-            }
-
             DataSet ds = new DataSet();
-            using (SqlCommand cmd = new SqlCommand(sqlstr, _con))
+            using (SqlConnection con = CreateConnection())
             {
-                foreach (var param in parameters)
+                using (SqlCommand cmd = new SqlCommand(sqlstr, con))
                 {
-                    cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                    foreach (var param in parameters)
+                    {
+                        cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                    }
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(ds);
                 }
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                da.Fill(ds);
             }
-            _con.Close();
             return ds;
         }
 
@@ -82,26 +72,20 @@ namespace ESC_GULEN_OPTIK_Web.Data
         {
             try
             {
-                _con.Open();
+                using (SqlConnection con = CreateConnection())
+                {
+                    con.Open();
+                    using (SqlCommand exec = new SqlCommand(sqlstr, con))
+                    {
+                        exec.ExecuteNonQuery();
+                    }
+                }
+                return true;
             }
             catch (Exception)
             {
-                _con.Close();
                 return false;
             }
-
-            try
-            {
-                SqlCommand exec = new SqlCommand(sqlstr, _con);
-                exec.ExecuteNonQuery();
-                _con.Close();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                return false;
-            }
-            return true;
         }
 
         /// <summary>
@@ -112,32 +96,24 @@ namespace ESC_GULEN_OPTIK_Web.Data
         {
             try
             {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                return false;
-            }
-
-            try
-            {
-                using (SqlCommand exec = new SqlCommand(sqlstr, _con))
+                using (SqlConnection con = CreateConnection())
                 {
-                    foreach (var param in parameters)
+                    con.Open();
+                    using (SqlCommand exec = new SqlCommand(sqlstr, con))
                     {
-                        exec.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        foreach (var param in parameters)
+                        {
+                            exec.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        }
+                        exec.ExecuteNonQuery();
                     }
-                    exec.ExecuteNonQuery();
                 }
-                _con.Close();
+                return true;
             }
             catch (Exception)
             {
-                _con.Close();
                 return false;
             }
-            return true;
         }
 
         /// <summary>
@@ -148,30 +124,22 @@ namespace ESC_GULEN_OPTIK_Web.Data
         {
             try
             {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                return -1;
-            }
-
-            try
-            {
-                using (SqlCommand exec = new SqlCommand(sqlstr, _con))
+                using (SqlConnection con = CreateConnection())
                 {
-                    foreach (var param in parameters)
+                    con.Open();
+                    using (SqlCommand exec = new SqlCommand(sqlstr, con))
                     {
-                        exec.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        foreach (var param in parameters)
+                        {
+                            exec.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        }
+                        var result = exec.ExecuteScalar();
+                        return Convert.ToInt32(result);
                     }
-                    var result = exec.ExecuteScalar();
-                    _con.Close();
-                    return Convert.ToInt32(result);
                 }
             }
             catch (Exception)
             {
-                _con.Close();
                 return -1;
             }
         }
@@ -184,72 +152,56 @@ namespace ESC_GULEN_OPTIK_Web.Data
         {
             try
             {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                return false;
-            }
-
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand(procedureName, _con))
+                using (SqlConnection con = CreateConnection())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    foreach (var param in parameters)
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(procedureName, con))
                     {
-                        cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        foreach (var param in parameters)
+                        {
+                            cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        }
+                        cmd.ExecuteNonQuery();
                     }
-                    cmd.ExecuteNonQuery();
                 }
-                _con.Close();
+                return true;
             }
             catch (Exception)
             {
-                _con.Close();
                 return false;
             }
-            return true;
         }
 
         /// <summary>
         /// Executes a stored procedure with an output parameter.
-        /// Usage: int result = dbcon.executeStoredProcedureWithOutput("deleteDepartment", "@result", ("@deptCode", "CS"));
+        /// Usage: int result = dbcon.executeStoredProcedureWithOutput("proc_CreateSale", "@NewTransactionID", ("@CustomerID", 1), ("@StaffID", 2));
         /// </summary>
         public int executeStoredProcedureWithOutput(string procedureName, string outputParamName, params (string name, object value)[] parameters)
         {
             try
             {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                return -1;
-            }
-
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand(procedureName, _con))
+                using (SqlConnection con = CreateConnection())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    foreach (var param in parameters)
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(procedureName, con))
                     {
-                        cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
-                    }
-                    cmd.Parameters.Add(new SqlParameter(outputParamName, SqlDbType.Int));
-                    cmd.Parameters[outputParamName].Direction = ParameterDirection.Output;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        foreach (var param in parameters)
+                        {
+                            cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                        }
+                        cmd.Parameters.Add(new SqlParameter(outputParamName, SqlDbType.Int));
+                        cmd.Parameters[outputParamName].Direction = ParameterDirection.Output;
 
-                    cmd.ExecuteNonQuery();
-                    int result = (int)cmd.Parameters[outputParamName].Value;
-                    _con.Close();
-                    return result;
+                        cmd.ExecuteNonQuery();
+                        int result = (int)cmd.Parameters[outputParamName].Value;
+                        return result;
+                    }
                 }
             }
             catch (Exception)
             {
-                _con.Close();
                 return -1;
             }
         }
@@ -260,28 +212,20 @@ namespace ESC_GULEN_OPTIK_Web.Data
         /// </summary>
         public DataSet getStoredProcedure(string procedureName, params (string name, object value)[] parameters)
         {
-            try
-            {
-                _con.Open();
-            }
-            catch (Exception)
-            {
-                _con.Close();
-                throw;
-            }
-
             DataSet ds = new DataSet();
-            using (SqlCommand cmd = new SqlCommand(procedureName, _con))
+            using (SqlConnection con = CreateConnection())
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                foreach (var param in parameters)
+                using (SqlCommand cmd = new SqlCommand(procedureName, con))
                 {
-                    cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    foreach (var param in parameters)
+                    {
+                        cmd.Parameters.AddWithValue(param.name, param.value ?? DBNull.Value);
+                    }
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(ds);
                 }
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                da.Fill(ds);
             }
-            _con.Close();
             return ds;
         }
 
@@ -300,20 +244,20 @@ namespace ESC_GULEN_OPTIK_Web.Data
         {
             try
             {
-                _con.Open();
-                using (SqlCommand cmd = new SqlCommand("SELECT DB_NAME()", _con))
+                using (SqlConnection con = CreateConnection())
                 {
-                    var dbName = cmd.ExecuteScalar();
-                    _con.Close();
-                    return (true, $"Connected to: {dbName}");
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("SELECT DB_NAME()", con))
+                    {
+                        var dbName = cmd.ExecuteScalar();
+                        return (true, $"Connected to: {dbName}");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _con.Close();
                 return (false, ex.Message);
             }
         }
     }
 }
-

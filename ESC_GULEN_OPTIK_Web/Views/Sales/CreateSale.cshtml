@@ -1,0 +1,129 @@
+@{
+    ViewData["Title"] = "Create New Sale";
+    var customers = ViewBag.Customers as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var products = ViewBag.Products as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-cart-plus me-2"></i>Create New Sale</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<form asp-action="CreateSale" method="post" id="saleForm">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <strong>Customer Selection</strong>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Customer *</label>
+                        <select name="CustomerID" class="form-select form-select-lg" required>
+                            <option value="">-- Select Customer --</option>
+                            @foreach (var customer in customers)
+                            {
+                                <option value="@customer.Value">@customer.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <strong>Products</strong>
+                    <button type="button" class="btn btn-light btn-sm" onclick="addProductRow()">
+                        <i class="bi bi-plus-circle me-1"></i>Add Product
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="productRows">
+                        <div class="row mb-3 product-row">
+                            <div class="col-md-8">
+                                <select name="ProductIDs" class="form-select" required>
+                                    <option value="">-- Select Product --</option>
+                                    @foreach (var product in products)
+                                    {
+                                        <option value="@product.Value">@product.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" name="Quantities" class="form-control" value="1" min="1" max="100" placeholder="Qty" required />
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-outline-danger" onclick="removeProductRow(this)" title="Remove">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white">
+                    <strong>Sale Summary</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Products will be added to the sale. Total will be calculated automatically including tax.
+                    </p>
+                    <hr />
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-check-circle me-2"></i>Create Sale
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    var productOptions = `
+        <option value="">-- Select Product --</option>
+        @foreach (var product in products)
+        {
+            <text><option value="@product.Value">@Html.Raw(product.Text?.Replace("'", "\\'"))</option></text>
+        }
+    `;
+
+    function addProductRow() {
+        var row = document.createElement('div');
+        row.className = 'row mb-3 product-row';
+        row.innerHTML = `
+            <div class="col-md-8">
+                <select name="ProductIDs" class="form-select" required>
+                    ${productOptions}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="Quantities" class="form-control" value="1" min="1" max="100" placeholder="Qty" required />
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-outline-danger" onclick="removeProductRow(this)" title="Remove">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        document.getElementById('productRows').appendChild(row);
+    }
+
+    function removeProductRow(btn) {
+        var rows = document.querySelectorAll('.product-row');
+        if (rows.length > 1) {
+            btn.closest('.product-row').remove();
+        } else {
+            alert('At least one product is required.');
+        }
+    }
+</script>
+}
+

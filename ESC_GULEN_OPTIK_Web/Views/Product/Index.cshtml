@@ -18,28 +18,70 @@
     </div>
 </div>
 
-<!-- Search with Stored Procedure -->
+<!-- Advanced Search with Stored Procedure -->
 <div class="card mb-3">
     <div class="card-header">🔍 Advanced Search (Using Stored Procedure)</div>
     <div class="card-body">
         <form asp-action="Search" method="get" class="row g-2">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="category" class="form-select">
                     <option value="">All Categories</option>
                     @foreach (var t in (string[])ViewBag.ProductTypes)
                     {
-                        <option value="@t">@t</option>
+                        <option value="@t" selected="@(ViewBag.Category == t)">@t</option>
                     }
                 </select>
             </div>
-            <div class="col-md-3">
-                <input type="number" name="minPrice" class="form-control" placeholder="Min Price" />
+            <div class="col-md-2">
+                <input type="text" name="color" class="form-control" placeholder="Color" value="@ViewBag.Color" />
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="material" class="form-control" placeholder="Material" value="@ViewBag.Material" />
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="minPrice" class="form-control" placeholder="Min Price" value="@ViewBag.MinPrice" />
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="maxPrice" class="form-control" placeholder="Max Price" value="@ViewBag.MaxPrice" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Quick Filter & Sort -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label class="col-form-label">Filter by Brand:</label>
             </div>
             <div class="col-md-3">
-                <input type="number" name="maxPrice" class="form-control" placeholder="Max Price" />
+                <input type="text" name="brand" class="form-control form-control-sm" placeholder="Brand name..." value="@ViewBag.SelectedBrand" />
             </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary">Search</button>
+            <div class="col-auto">
+                <label class="col-form-label">Sort by:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="sortBy" class="form-select form-select-sm">
+                    <option value="brand" selected="@(ViewBag.CurrentSort == "brand")">Brand</option>
+                    <option value="price" selected="@(ViewBag.CurrentSort == "price")">Price</option>
+                    <option value="stock" selected="@(ViewBag.CurrentSort == "stock")">Stock</option>
+                    <option value="type" selected="@(ViewBag.CurrentSort == "type")">Type</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="sortOrder" class="form-select form-select-sm">
+                    <option value="ASC" selected="@(ViewBag.CurrentOrder != "DESC")">Ascending</option>
+                    <option value="DESC" selected="@(ViewBag.CurrentOrder == "DESC")">Descending</option>
+                </select>
+            </div>
+            <input type="hidden" name="type" value="@ViewBag.SelectedType" />
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Clear</a>
             </div>
         </form>
     </div>
@@ -51,14 +93,31 @@
         @if (Model.Any())
         {
             <table class="table table-hover mb-0">
-                <thead>
+                <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>Brand</th>
-                        <th>Type</th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortBy="brand" asp-route-sortOrder="@(ViewBag.CurrentSort == "brand" && ViewBag.CurrentOrder != "DESC" ? "DESC" : "ASC")" asp-route-type="@ViewBag.SelectedType" class="text-decoration-none text-dark">
+                                Brand @(ViewBag.CurrentSort == "brand" ? (ViewBag.CurrentOrder == "DESC" ? "↓" : "↑") : "")
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortBy="type" asp-route-sortOrder="@(ViewBag.CurrentSort == "type" && ViewBag.CurrentOrder != "DESC" ? "DESC" : "ASC")" asp-route-type="@ViewBag.SelectedType" class="text-decoration-none text-dark">
+                                Type @(ViewBag.CurrentSort == "type" ? (ViewBag.CurrentOrder == "DESC" ? "↓" : "↑") : "")
+                            </a>
+                        </th>
                         <th>Model</th>
-                        <th>Stock</th>
-                        <th>Price</th>
+                        <th>Color</th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortBy="stock" asp-route-sortOrder="@(ViewBag.CurrentSort == "stock" && ViewBag.CurrentOrder != "DESC" ? "DESC" : "ASC")" asp-route-type="@ViewBag.SelectedType" class="text-decoration-none text-dark">
+                                Stock @(ViewBag.CurrentSort == "stock" ? (ViewBag.CurrentOrder == "DESC" ? "↓" : "↑") : "")
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortBy="price" asp-route-sortOrder="@(ViewBag.CurrentSort == "price" && ViewBag.CurrentOrder != "DESC" ? "DESC" : "ASC")" asp-route-type="@ViewBag.SelectedType" class="text-decoration-none text-dark">
+                                Price @(ViewBag.CurrentSort == "price" ? (ViewBag.CurrentOrder == "DESC" ? "↓" : "↑") : "")
+                            </a>
+                        </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -67,9 +126,10 @@
                     {
                         <tr>
                             <td>@p.ProductID</td>
-                            <td>@p.Brand</td>
+                            <td><strong>@p.Brand</strong></td>
                             <td><span class="badge bg-secondary">@p.ProductType</span></td>
                             <td>@(p.ModelOrSerial ?? "-")</td>
+                            <td>@(p.ColorInfo ?? "-")</td>
                             <td>
                                 @if (p.StockQuantity > 5)
                                 {
@@ -94,6 +154,9 @@
                     }
                 </tbody>
             </table>
+            <div class="card-footer text-muted">
+                Total: @Model.Count products
+            </div>
         }
         else
         {
@@ -104,4 +167,3 @@
         }
     </div>
 </div>
-

@@ -1,0 +1,181 @@
+@model List<ESC_GULEN_OPTIK_Web.Models.Transaction>
+@{ ViewData["Title"] = "Transactions"; }
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Transactions</h2>
+    <div>
+        <a asp-action="CreateSale" class="btn btn-success">+ New Sale</a>
+        <a asp-action="CreateRepair" class="btn btn-warning">+ New Repair</a>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="card mb-3">
+    <div class="card-header">🔍 Filter Transactions</div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-2">
+            <div class="col-md-3">
+                <label class="form-label small">Customer</label>
+                <select name="customerId" class="form-select">
+                    <option value="">All Customers</option>
+                    @if (ViewBag.Customers != null)
+                    {
+                        @foreach (var c in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Customers)
+                        {
+                            <option value="@c.Value" selected="@(ViewBag.SelectedCustomerId?.ToString() == c.Value)">@c.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Type</label>
+                <select name="transactionType" class="form-select">
+                    <option value="">All Types</option>
+                    @if (ViewBag.TransactionTypes != null)
+                    {
+                        @foreach (var t in (string[])ViewBag.TransactionTypes)
+                        {
+                            <option value="@t" selected="@(ViewBag.SelectedType == t)">@t</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">From Date</label>
+                <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">To Date</label>
+                <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Count</h4>
+                <small>Total Transactions</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Sum(t => t.TotalAmount).ToString("N2") ₺</h4>
+                <small>Total Amount</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h4>@Model.Sum(t => t.RemainingBalance).ToString("N2") ₺</h4>
+                <small>Pending Balance</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Count(t => t.RemainingBalance > 0)</h4>
+                <small>Unpaid Transactions</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Staff</th>
+                        <th>Total</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td>#@t.TransactionID</td>
+                            <td>@t.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><strong>@t.CustomerName</strong></td>
+                            <td>
+                                @if (t.TransactionTypeName == "SALE")
+                                {
+                                    <span class="badge bg-success">SALE</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">REPAIR</span>
+                                }
+                            </td>
+                            <td>@t.StaffName</td>
+                            <td>@t.TotalAmount.ToString("N2") ₺</td>
+                            <td>
+                                @if (t.RemainingBalance > 0)
+                                {
+                                    <span class="text-danger fw-bold">@t.RemainingBalance.ToString("N2") ₺</span>
+                                }
+                                else
+                                {
+                                    <span class="text-success">Paid</span>
+                                }
+                            </td>
+                            <td>
+                                @if (t.RemainingBalance == 0)
+                                {
+                                    <span class="badge bg-success">✓ Completed</span>
+                                }
+                                else if (t.RemainingBalance < t.TotalAmount)
+                                {
+                                    <span class="badge bg-warning text-dark">Partial</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Unpaid</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@t.TransactionID" class="btn btn-sm btn-info">Details</a>
+                                @if (t.RemainingBalance > 0)
+                                {
+                                    <a asp-controller="Payment" asp-action="QuickPay" asp-route-id="@t.TransactionID" class="btn btn-sm btn-success">Pay</a>
+                                }
+                                <form asp-action="Delete" asp-route-id="@t.TransactionID" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this transaction?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="text-muted">No transactions found.</p>
+                <a asp-action="CreateSale" class="btn btn-success">+ Create New Sale</a>
+            </div>
+        }
+    </div>
+</div>

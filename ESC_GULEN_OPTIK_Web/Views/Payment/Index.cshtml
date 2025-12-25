@@ -1,0 +1,61 @@
+@model List<dynamic>
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-cash-stack me-2"></i>Payment History</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>New Payment
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>No payments recorded yet.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Transaction</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Payment Type</th>
+                            <th>Date</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>#@item.PaymentID</td>
+                                <td>
+                                    <a asp-controller="Sales" asp-action="Details" asp-route-id="@item.TransactionID">
+                                        #@item.TransactionID
+                                    </a>
+                                </td>
+                                <td>@item.CustomerName</td>
+                                <td>
+                                    <span class="badge bg-secondary">@item.TransactionType</span>
+                                </td>
+                                <td>@item.PaymentType</td>
+                                <td>@item.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-end text-success fw-bold">@item.AmountPaid.ToString("N2") ₺</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

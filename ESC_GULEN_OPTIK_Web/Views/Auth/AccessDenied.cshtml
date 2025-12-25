@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card border-danger">
+                <div class="card-body py-5">
+                    <i class="fas fa-ban text-danger" style="font-size: 5rem;"></i>
+                    <h2 class="mt-4 text-danger">Access Denied</h2>
+                    <p class="text-muted mt-3">
+                        You don't have permission to access this page.<br/>
+                        This area is restricted to administrators only.
+                    </p>
+                    <hr class="my-4" />
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Go to Home
+                    </a>
+                    <a asp-controller="Auth" asp-action="Logout" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

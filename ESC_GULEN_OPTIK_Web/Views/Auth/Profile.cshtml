@@ -1,0 +1,116 @@
+@model ESC_GULEN_OPTIK_Web.Models.Staff
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle me-2" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                        My Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <span class="display-4 text-primary">@Model.FirstName[0]@Model.LastName[0]</span>
+                            </div>
+                            <h5 class="mt-3">@Model.FullName</h5>
+                            <span class="badge @(ViewBag.IsAdmin ? "bg-danger" : "bg-secondary") fs-6">
+                                @(Model.Position ?? "Staff")
+                            </span>
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-muted" style="width: 40%;">Staff ID</th>
+                                        <td>@Model.StaffID</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Email</th>
+                                        <td>@Model.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Phone</th>
+                                        <td>@(Model.PhoneNumber ?? "Not specified")</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Date of Birth</th>
+                                        <td>
+                                            @if (Model.DateOfBirth.HasValue)
+                                            {
+                                                @Model.DateOfBirth.Value.ToString("dd MMMM yyyy")
+                                                <span class="text-muted">(@Model.Age years old)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not specified</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Job Start Date</th>
+                                        <td>
+                                            @Model.JobStartDate.ToString("dd MMMM yyyy")
+                                            <span class="text-muted">(@Model.YearsOfExperience years)</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Access Level</h5>
+                            @if (ViewBag.IsAdmin)
+                            {
+                                <div class="alert alert-success">
+                                    <strong>Administrator Access</strong><br />
+                                    You have full access to all system features including:
+                                    <ul class="mb-0 mt-2">
+                                        <li>Staff Management (Add, Edit, Delete)</li>
+                                        <li>Product & Stock Management</li>
+                                        <li>Customer Management</li>
+                                        <li>Sales & Transactions</li>
+                                        <li>Financial Reports</li>
+                                        <li>System Settings</li>
+                                    </ul>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">
+                                    <strong>Staff Access</strong><br />
+                                    You have access to:
+                                    <ul class="mb-0 mt-2">
+                                        <li>Product & Stock Management</li>
+                                        <li>Customer Registration</li>
+                                        <li>Sales & Transactions</li>
+                                        <li>Price Lookup</li>
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

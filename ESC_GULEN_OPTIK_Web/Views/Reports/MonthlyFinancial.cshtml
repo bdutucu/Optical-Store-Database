@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "Monthly Financial Report";
+    var selectedMonth = ViewBag.SelectedMonth as int? ?? DateTime.Now.Month;
+    var selectedYear = ViewBag.SelectedYear as int? ?? DateTime.Now.Year;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-calendar-month me-2"></i>Monthly Financial Report</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Reports
+    </a>
+</div>
+
+<!-- Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Month</label>
+                <select name="month" class="form-select">
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m" selected="@(m == selectedMonth)">
+                            @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Year</label>
+                <select name="year" class="form-select">
+                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--)
+                    {
+                        <option value="@y" selected="@(y == selectedYear)">@y</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>Generate Report
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Report Results -->
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <h6 class="text-white-50">Total Revenue</h6>
+                <h2 class="mb-0">@(((decimal)ViewBag.TotalRevenue).ToString("N2")) ₺</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <h6 class="text-white-50">Cash Collected</h6>
+                <h2 class="mb-0">@(((decimal)ViewBag.CashInflow).ToString("N2")) ₺</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Pending Receivables</h6>
+                <h2 class="mb-0">@(((decimal)ViewBag.PendingReceivables).ToString("N2")) ₺</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <h6 class="text-white-50">Transactions</h6>
+                <h2 class="mb-0">@ViewBag.TransactionCount</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
