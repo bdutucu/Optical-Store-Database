@@ -312,6 +312,23 @@ GO
 PRINT '✅ proc_UpdateProduct güncellendi';
 GO
 
+-- =============================================
+-- 7. CUSTOMER EMAIL UNIQUE CONSTRAINT
+-- =============================================
+
+-- Önce mevcut constraint varsa kaldır
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'UQ_Customer_MailAddress' AND object_id = OBJECT_ID('Customer'))
+BEGIN
+    ALTER TABLE Customer DROP CONSTRAINT UQ_Customer_MailAddress;
+END
+
+-- Unique constraint ekle (NULL değerler için birden fazla satıra izin verir)
+-- SQL Server'da UNIQUE constraint NULL değerlere izin verir
+ALTER TABLE Customer ADD CONSTRAINT UQ_Customer_MailAddress UNIQUE (MailAddress);
+
+PRINT '✅ Customer MailAddress UNIQUE constraint eklendi';
+GO
+
 PRINT '';
 PRINT '========================================';
 PRINT '✅ TÜM MIGRATION İŞLEMLERİ TAMAMLANDI!';
@@ -323,5 +340,6 @@ PRINT '2. Payment silindiğinde Cash/CreditCard da silinir';
 PRINT '3. Product silindiğinde ProductMaterials da silinir';
 PRINT '4. Lens/ContactLens için material eklenemez';
 PRINT '5. Çoklu material ekleme desteği (proc_AddMultipleProductMaterials)';
+PRINT '6. Customer MailAddress UNIQUE constraint';
 GO
 

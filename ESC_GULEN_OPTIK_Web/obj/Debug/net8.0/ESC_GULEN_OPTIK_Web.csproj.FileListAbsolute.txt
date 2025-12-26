@@ -76,3 +76,4 @@ C:\Users\Bugra\Desktop\DATABASE WEB\ESC_GULEN_OPTIK_Web\obj\Debug\net8.0\refint\
 C:\Users\Bugra\Desktop\DATABASE WEB\ESC_GULEN_OPTIK_Web\obj\Debug\net8.0\ESC_GULEN_OPTIK_Web.pdb
 C:\Users\Bugra\Desktop\DATABASE WEB\ESC_GULEN_OPTIK_Web\obj\Debug\net8.0\ESC_GULEN_OPTIK_Web.genruntimeconfig.cache
 C:\Users\Bugra\Desktop\DATABASE WEB\ESC_GULEN_OPTIK_Web\obj\Debug\net8.0\ref\ESC_GULEN_OPTIK_Web.dll
+C:\Users\Bugra\Desktop\DATABASE WEB\ESC_GULEN_OPTIK_Web\obj\Debug\net8.0\ESC_GULEN_OPTIK_Web.sourcelink.json

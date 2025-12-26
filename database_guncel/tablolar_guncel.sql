@@ -25,7 +25,7 @@ CREATE TABLE Customer (
     NationalID NVARCHAR(20) UNIQUE NOT NULL,
     FirstName NVARCHAR(50) NOT NULL,
     LastName NVARCHAR(50) NOT NULL,
-    MailAddress NVARCHAR(100),
+    MailAddress NVARCHAR(100) UNIQUE,  -- Email must be unique
     InsuranceInfo NVARCHAR(100),
     RegisteredByStaffID INT NOT NULL,
     FOREIGN KEY (RegisteredByStaffID) REFERENCES Staff(StaffID)
