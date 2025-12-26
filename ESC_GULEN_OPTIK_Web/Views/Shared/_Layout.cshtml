@@ -89,18 +89,34 @@
                                 </ul>
                             </li>
 
-                            <!-- Customers -->
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Customer" asp-action="Index">
+                            <!-- Customers & Prescriptions -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="bi bi-people me-1"></i>Customers
                                 </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Customer" asp-action="Create"><i class="bi bi-person-plus me-2"></i>New Customer</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Customer" asp-action="Index"><i class="bi bi-people me-2"></i>All Customers</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-controller="Prescription" asp-action="Create"><i class="bi bi-file-medical me-2"></i>New Prescription</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Prescription" asp-action="Index"><i class="bi bi-file-earmark-medical me-2"></i>All Prescriptions</a></li>
+                                </ul>
                             </li>
 
                             <!-- Products -->
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Product" asp-action="Index">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="bi bi-box-seam me-1"></i>Products
                                 </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Create"><i class="bi bi-plus-circle me-2"></i>Add Product</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index"><i class="bi bi-grid me-2"></i>All Products</a></li>
+                                    @if (isAdmin)
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Material" asp-action="Index"><i class="bi bi-gem me-2"></i>Manage Materials</a></li>
+                                    }
+                                </ul>
                             </li>
 
                             @if (isAdmin)

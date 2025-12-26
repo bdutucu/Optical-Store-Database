@@ -127,13 +127,11 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                     }
                 }
 
-                // Get ReceivedBy for Cash payments (current user's name)
-                string? receivedBy = null;
-                if (payment.PaymentType == "Cash")
-                {
-                    var currentUser = HttpContext.Session.GetCurrentUser();
-                    receivedBy = payment.ReceivedBy ?? currentUser?.FullName ?? "Staff";
-                }
+                // Get current user info - ReceivedBy is ALWAYS the logged-in staff
+                var currentUser = HttpContext.Session.GetCurrentUser();
+                string receivedBy = currentUser?.FullName ?? "Unknown Staff";
+                
+                // For CreditCard, still need CardOwner from form
 
                 // Use proc_AddPayment stored procedure for subtype support
                 _dbcon.getStoredProcedure("proc_AddPayment",

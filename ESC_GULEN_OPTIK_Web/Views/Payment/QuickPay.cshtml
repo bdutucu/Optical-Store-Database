@@ -80,12 +80,6 @@
                         </div>
                     </div>
 
-                    <!-- Cash specific fields -->
-                    <div id="cashFields" class="mb-3">
-                        <label asp-for="ReceivedBy" class="form-label">Received By</label>
-                        <input asp-for="ReceivedBy" class="form-control" placeholder="Staff name receiving cash" />
-                    </div>
-
                     <!-- Credit Card specific fields -->
                     <div id="creditCardFields" class="mb-3" style="display:none;">
                         <label asp-for="CardOwner" class="form-label">Card Owner Name</label>
@@ -106,17 +100,13 @@
     <script>
         function updatePaymentFields() {
             var selectedType = document.querySelector('input[name="PaymentType"]:checked').value;
-            var cashFields = document.getElementById('cashFields');
             var creditCardFields = document.getElementById('creditCardFields');
             
             // Hide all
-            cashFields.style.display = 'none';
             creditCardFields.style.display = 'none';
             
             // Show based on type
-            if (selectedType === 'Cash') {
-                cashFields.style.display = 'block';
-            } else if (selectedType === 'CreditCard') {
+            if (selectedType === 'CreditCard') {
                 creditCardFields.style.display = 'block';
             }
         }

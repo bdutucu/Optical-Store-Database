@@ -1,0 +1,58 @@
+@{ ViewData["Title"] = "Add Material"; }
+
+<h2><i class="bi bi-plus-circle me-2"></i>Add New Material</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Material Name *</label>
+                        <input type="text" name="MaterialName" class="form-control" required 
+                               placeholder="e.g., Titanium, Acetate, TR-90" />
+                        <small class="text-muted">Enter a unique material name</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="Description" class="form-control" rows="3" 
+                                  placeholder="Optional description of the material properties..."></textarea>
+                    </div>
+
+                    <hr />
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i>Create Material
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-header">
+                <strong><i class="bi bi-lightbulb me-2"></i>Tips</strong>
+            </div>
+            <div class="card-body">
+                <p><strong>Common Frame Materials:</strong></p>
+                <ul>
+                    <li><strong>Titanium:</strong> Lightweight, hypoallergenic, durable</li>
+                    <li><strong>Acetate:</strong> Colorful, comfortable, flexible</li>
+                    <li><strong>TR-90:</strong> Super lightweight, flexible, impact-resistant</li>
+                    <li><strong>Stainless Steel:</strong> Strong, corrosion-resistant</li>
+                </ul>
+                <p><strong>Common Sunglasses Materials:</strong></p>
+                <ul>
+                    <li><strong>Polycarbonate:</strong> Impact-resistant, lightweight</li>
+                    <li><strong>Nylon:</strong> Flexible, durable for sports</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+

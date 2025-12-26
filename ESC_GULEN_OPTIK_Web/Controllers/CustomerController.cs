@@ -65,7 +65,47 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(MapRowToCustomer(ds.Tables[0].Rows[0]));
+            var customer = MapRowToCustomer(ds.Tables[0].Rows[0]);
+            
+            // Get customer's prescriptions
+            string prescriptionSql = @"SELECT p.*, st.FirstName + ' ' + st.LastName AS StaffName 
+                                       FROM Prescription p 
+                                       LEFT JOIN Staff st ON p.StaffID = st.StaffID
+                                       WHERE p.CustomerID = @id 
+                                       ORDER BY p.DateOfPrescription DESC";
+            DataSet dsPrescriptions = _dbcon.getSelectWithParams(prescriptionSql, ("@id", id));
+            
+            var prescriptions = new List<Prescription>();
+            foreach (DataRow row in dsPrescriptions.Tables[0].Rows)
+            {
+                prescriptions.Add(new Prescription
+                {
+                    PrescriptionID = Convert.ToInt32(row["PrescriptionID"]),
+                    DateOfPrescription = Convert.ToDateTime(row["DateOfPrescription"]),
+                    DoctorName = row["DoctorName"] == DBNull.Value ? null : row["DoctorName"].ToString(),
+                    StaffID = row["StaffID"] == DBNull.Value ? null : Convert.ToInt32(row["StaffID"]),
+                    StaffName = row["StaffName"] == DBNull.Value ? null : row["StaffName"].ToString(),
+                    Right_SPH = row["Right_SPH"] == DBNull.Value ? null : Convert.ToDecimal(row["Right_SPH"]),
+                    Right_CYL = row["Right_CYL"] == DBNull.Value ? null : Convert.ToDecimal(row["Right_CYL"]),
+                    Right_AX = row["Right_AX"] == DBNull.Value ? null : Convert.ToInt32(row["Right_AX"]),
+                    Left_SPH = row["Left_SPH"] == DBNull.Value ? null : Convert.ToDecimal(row["Left_SPH"]),
+                    Left_CYL = row["Left_CYL"] == DBNull.Value ? null : Convert.ToDecimal(row["Left_CYL"]),
+                    Left_AX = row["Left_AX"] == DBNull.Value ? null : Convert.ToInt32(row["Left_AX"])
+                });
+            }
+            ViewBag.Prescriptions = prescriptions;
+            
+            // Get customer's recent transactions
+            string transactionSql = @"SELECT TOP 5 t.TransactionID, t.TransactionDate, t.TotalAmount, 
+                                      t.RemainingBalance, tt.TypeName AS TransactionTypeName
+                                      FROM Transactions t 
+                                      INNER JOIN TransactionTypes tt ON t.TransactionTypeID = tt.TransactionTypeID
+                                      WHERE t.CustomerID = @id 
+                                      ORDER BY t.TransactionDate DESC";
+            DataSet dsTransactions = _dbcon.getSelectWithParams(transactionSql, ("@id", id));
+            ViewBag.RecentTransactions = dsTransactions.Tables[0];
+
+            return View(customer);
         }
 
         /// <summary>

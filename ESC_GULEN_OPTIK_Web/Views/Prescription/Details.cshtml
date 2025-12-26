@@ -1,0 +1,188 @@
+@model ESC_GULEN_OPTIK_Web.Models.Prescription
+@{
+    ViewData["Title"] = "Prescription Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-file-medical me-2"></i>Prescription Details</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.PrescriptionID" class="btn btn-primary">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <strong><i class="bi bi-person me-2"></i>Patient Information</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Prescription ID</dt>
+                    <dd class="col-sm-8"><strong>#@Model.PrescriptionID</strong></dd>
+
+                    <dt class="col-sm-4">Customer</dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="Customer" asp-action="Details" asp-route-id="@Model.CustomerID">
+                            @Model.CustomerName
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Date</dt>
+                    <dd class="col-sm-8">@Model.DateOfPrescription.ToString("dd MMMM yyyy")</dd>
+
+                    <dt class="col-sm-4">Doctor</dt>
+                    <dd class="col-sm-8">
+                        @if (string.IsNullOrEmpty(Model.DoctorName))
+                        {
+                            <span class="badge bg-info">Internal Examination</span>
+                        }
+                        else
+                        {
+                            @Model.DoctorName
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Examined By</dt>
+                    <dd class="col-sm-8">@(Model.StaffName ?? "External/Not specified")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <strong><i class="bi bi-eye me-2"></i>Eye Measurements</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Right Eye -->
+                    <div class="col-6">
+                        <h6 class="text-center mb-3">
+                            <span class="badge bg-dark px-3 py-2">👁️ Right Eye (OD)</span>
+                        </h6>
+                        <table class="table table-sm table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>SPH</th>
+                                    <th>CYL</th>
+                                    <th>AXIS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fs-5">
+                                        @if (Model.Right_SPH.HasValue)
+                                        {
+                                            <strong>@Model.Right_SPH.Value.ToString("+0.00;-0.00")</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="fs-5">
+                                        @if (Model.Right_CYL.HasValue)
+                                        {
+                                            <strong>@Model.Right_CYL.Value.ToString("+0.00;-0.00")</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="fs-5">
+                                        @if (Model.Right_AX.HasValue)
+                                        {
+                                            <strong>@Model.Right_AX°</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Left Eye -->
+                    <div class="col-6">
+                        <h6 class="text-center mb-3">
+                            <span class="badge bg-dark px-3 py-2">👁️ Left Eye (OS)</span>
+                        </h6>
+                        <table class="table table-sm table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>SPH</th>
+                                    <th>CYL</th>
+                                    <th>AXIS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fs-5">
+                                        @if (Model.Left_SPH.HasValue)
+                                        {
+                                            <strong>@Model.Left_SPH.Value.ToString("+0.00;-0.00")</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="fs-5">
+                                        @if (Model.Left_CYL.HasValue)
+                                        {
+                                            <strong>@Model.Left_CYL.Value.ToString("+0.00;-0.00")</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="fs-5">
+                                        @if (Model.Left_AX.HasValue)
+                                        {
+                                            <strong>@Model.Left_AX°</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <strong><i class="bi bi-printer me-2"></i>Print / Actions</strong>
+    </div>
+    <div class="card-body">
+        <div class="btn-group">
+            <button class="btn btn-outline-primary" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print Prescription
+            </button>
+            <a asp-controller="Sales" asp-action="CreateSale" class="btn btn-outline-success">
+                <i class="bi bi-cart-plus me-1"></i>Create Sale with This Prescription
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.PrescriptionID" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>Delete
+            </a>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,143 @@
+@model ESC_GULEN_OPTIK_Web.Models.Prescription
+@{
+    ViewData["Title"] = "Edit Prescription";
+}
+
+<h2><i class="bi bi-pencil me-2"></i>Edit Prescription - Eye Measurements</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input type="hidden" asp-for="PrescriptionID" />
+                    <input type="hidden" asp-for="CustomerID" />
+                    <input type="hidden" asp-for="StaffID" />
+                    <input type="hidden" asp-for="DateOfPrescription" />
+                    <input type="hidden" asp-for="DoctorName" />
+
+                    <!-- Read-only Info -->
+                    <h5 class="mb-3"><i class="bi bi-info-circle me-2"></i>Prescription Information (Read-Only)</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Customer</label>
+                            <div class="form-control bg-light">
+                                <i class="bi bi-person me-1"></i>@Model.CustomerName
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prescription Date</label>
+                            <div class="form-control bg-light">
+                                <i class="bi bi-calendar me-1"></i>@Model.DateOfPrescription.ToString("dd.MM.yyyy")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">External Doctor</label>
+                            <div class="form-control bg-light">
+                                @(string.IsNullOrEmpty(Model.DoctorName) ? "Internal Examination" : Model.DoctorName)
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Examined By</label>
+                            <div class="form-control bg-light">
+                                <i class="bi bi-person-badge me-1"></i>@(Model.StaffName ?? "External")
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Only eye measurements can be edited. Customer and prescription details cannot be changed.
+                    </div>
+
+                    <hr />
+
+                    <!-- Eye Measurements -->
+                    <h5 class="mb-3"><i class="bi bi-eye me-2"></i>Eye Measurements</h5>
+                    
+                    <div class="row">
+                        <!-- Right Eye -->
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-header">
+                                    <strong>👁️ Right Eye (OD)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-4 mb-2">
+                                            <label asp-for="Right_SPH" class="form-label small">SPH</label>
+                                            <input asp-for="Right_SPH" class="form-control" type="number" step="0.25" min="-20" max="20" />
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <label asp-for="Right_CYL" class="form-label small">CYL</label>
+                                            <input asp-for="Right_CYL" class="form-control" type="number" step="0.25" min="-10" max="10" />
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <label asp-for="Right_AX" class="form-label small">Axis (°)</label>
+                                            <input asp-for="Right_AX" class="form-control" type="number" min="0" max="180" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left Eye -->
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-header">
+                                    <strong>👁️ Left Eye (OS)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-4 mb-2">
+                                            <label asp-for="Left_SPH" class="form-label small">SPH</label>
+                                            <input asp-for="Left_SPH" class="form-control" type="number" step="0.25" min="-20" max="20" />
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <label asp-for="Left_CYL" class="form-label small">CYL</label>
+                                            <input asp-for="Left_CYL" class="form-control" type="number" step="0.25" min="-10" max="10" />
+                                        </div>
+                                        <div class="col-4 mb-2">
+                                            <label asp-for="Left_AX" class="form-label small">Axis (°)</label>
+                                            <input asp-for="Left_AX" class="form-control" type="number" min="0" max="180" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>Save Changes
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-warning">
+            <div class="card-header">
+                <strong><i class="bi bi-exclamation-triangle me-1"></i>Important</strong>
+            </div>
+            <div class="card-body">
+                <p>Changes to this prescription will affect any linked sales transactions.</p>
+                <p class="mb-0"><strong>Prescription ID:</strong> #@Model.PrescriptionID</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

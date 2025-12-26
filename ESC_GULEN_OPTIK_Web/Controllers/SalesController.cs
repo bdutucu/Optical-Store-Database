@@ -237,7 +237,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateSale(int CustomerID, int[] ProductIDs, int[] Quantities)
+        public IActionResult CreateSale(int CustomerID, int[] ProductIDs, int[] Quantities, int? PrescriptionID)
         {
             if (CustomerID <= 0)
             {
@@ -249,6 +249,35 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
             if (ProductIDs == null || ProductIDs.Length == 0)
             {
                 TempData["Error"] = "Please add at least one product.";
+                LoadDropdowns();
+                return View();
+            }
+
+            // Check if any product is Lens (4) or ContactLens (3) - prescription is required
+            bool requiresPrescription = false;
+            foreach (int productId in ProductIDs)
+            {
+                if (productId > 0)
+                {
+                    DataSet dsType = _dbcon.getSelectWithParams(
+                        "SELECT ProductTypeID FROM Product WHERE ProductID = @id",
+                        ("@id", productId));
+                    
+                    if (dsType.Tables[0].Rows.Count > 0)
+                    {
+                        int typeId = Convert.ToInt32(dsType.Tables[0].Rows[0]["ProductTypeID"]);
+                        if (typeId == 3 || typeId == 4) // ContactLens or Lens
+                        {
+                            requiresPrescription = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (requiresPrescription && !PrescriptionID.HasValue)
+            {
+                TempData["Error"] = "Lens ve Contact Lens ürünleri için reçete seçimi zorunludur!";
                 LoadDropdowns();
                 return View();
             }
@@ -276,6 +305,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                 }
 
                 // Add items to sale using stored procedure
+                // Pass PrescriptionID if selected
                 for (int i = 0; i < ProductIDs.Length; i++)
                 {
                     int productID = ProductIDs[i];
@@ -287,12 +317,13 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                             ("@TransactionID", newTransactionID),
                             ("@ProductID", productID),
                             ("@Quantity", quantity),
-                            ("@PrescriptionID", DBNull.Value)
+                            ("@PrescriptionID", PrescriptionID.HasValue ? PrescriptionID.Value : DBNull.Value)
                         );
                     }
                 }
 
-                TempData["Success"] = "Sale created successfully!";
+                TempData["Success"] = "Sale created successfully!" + 
+                    (PrescriptionID.HasValue ? " (with prescription)" : "");
                 return RedirectToAction(nameof(Details), new { id = newTransactionID });
             }
             catch (Exception ex)
@@ -414,8 +445,12 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
         private void LoadProductDropdown()
         {
             var products = new List<SelectListItem>();
+            
+            // ProductTypeID bilgisini data-attribute olarak tutuyoruz (view'da kullanmak için)
             DataSet ds = _dbcon.getSelect(@"
-                SELECT P.ProductID, P.Brand + ' - ' + PT.TypeName + ' (' + CAST(P.Price AS VARCHAR) + ' TL)' AS ProductInfo, P.Price, P.StockQuantity
+                SELECT P.ProductID, P.ProductTypeID, PT.TypeName,
+                       P.Brand + ' - ' + PT.TypeName + ' (' + CAST(P.Price AS VARCHAR) + ' TL)' AS ProductInfo, 
+                       P.Price, P.StockQuantity
                 FROM Product P
                 INNER JOIN ProductTypes PT ON P.ProductTypeID = PT.ProductTypeID
                 WHERE P.StockQuantity > 0
@@ -433,6 +468,19 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                 }
             }
             ViewBag.Products = products;
+            
+            // Lens ve ContactLens için product type map (JS'de kullanmak için)
+            var productTypeMap = new Dictionary<int, int>();
+            if (ds.Tables.Count > 0)
+            {
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    int productId = Convert.ToInt32(row["ProductID"]);
+                    int typeId = Convert.ToInt32(row["ProductTypeID"]);
+                    productTypeMap[productId] = typeId;
+                }
+            }
+            ViewBag.ProductTypeMap = System.Text.Json.JsonSerializer.Serialize(productTypeMap);
         }
     }
 }

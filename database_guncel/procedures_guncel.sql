@@ -818,6 +818,7 @@ END;
 GO
 
 -- proc_GetProductDetails: Gets full product details including subtype
+-- NOT: Göz ölçüleri artık Prescription tablosunda tutulduğu için burada yok
 CREATE OR ALTER PROCEDURE proc_GetProductDetails
     @ProductID INT
 AS
@@ -836,14 +837,8 @@ BEGIN
         COALESCE(F.FrameModel, S.SunGlassesSerialNo, CL.ContactLensSerialNo, L.LensSerialNo) AS ModelOrSerial,
         COALESCE(F.ColourCode, S.ColourCode, CL.Colour) AS ColourCode,
         S.Size,
-        COALESCE(CL.Type, L.Type) AS LensType,
-        -- Eye measurements
-        COALESCE(CL.Right_SPH, L.Right_SPH) AS Right_SPH,
-        COALESCE(CL.Right_CYL, L.Right_CYL) AS Right_CYL,
-        COALESCE(CL.Right_AX, L.Right_AX) AS Right_AX,
-        COALESCE(CL.Left_SPH, L.Left_SPH) AS Left_SPH,
-        COALESCE(CL.Left_CYL, L.Left_CYL) AS Left_CYL,
-        COALESCE(CL.Left_AX, L.Left_AX) AS Left_AX
+        COALESCE(CL.Type, L.Type) AS LensType
+        -- Göz ölçüleri kaldırıldı - artık Prescription tablosunda
     FROM Product P
     INNER JOIN ProductTypes PT ON P.ProductTypeID = PT.ProductTypeID
     LEFT JOIN Frames F ON P.ProductID = F.ProductID

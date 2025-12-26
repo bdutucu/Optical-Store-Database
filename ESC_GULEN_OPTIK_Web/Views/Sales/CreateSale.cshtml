@@ -2,6 +2,7 @@
     ViewData["Title"] = "Create New Sale";
     var customers = ViewBag.Customers as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
     var products = ViewBag.Products as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+    var productTypeMap = ViewBag.ProductTypeMap ?? "{}";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,14 +15,15 @@
 <form asp-action="CreateSale" method="post" id="saleForm">
     <div class="row">
         <div class="col-md-8">
+            <!-- Customer Selection -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <strong>Customer Selection</strong>
+                    <strong><i class="bi bi-person me-2"></i>Customer Selection</strong>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label">Select Customer *</label>
-                        <select name="CustomerID" class="form-select form-select-lg" required>
+                        <select name="CustomerID" id="customerSelect" class="form-select form-select-lg" required>
                             <option value="">-- Select Customer --</option>
                             @foreach (var customer in customers)
                             {
@@ -32,9 +34,45 @@
                 </div>
             </div>
 
+            <!-- Prescription Selection (appears after customer is selected) -->
+            <div class="card mb-4" id="prescriptionSection" style="display: none;">
+                <div class="card-header d-flex justify-content-between align-items-center" id="prescriptionHeader">
+                    <strong><i class="bi bi-file-medical me-2"></i><span id="prescriptionTitle">Prescription (Optional)</span></strong>
+                    <a href="#" id="createPrescriptionLink" class="btn btn-light btn-sm" target="_blank">
+                        <i class="bi bi-plus-circle me-1"></i>New Prescription
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Lens/ContactLens uyarısı -->
+                    <div id="prescriptionRequiredWarning" class="alert alert-danger mb-3" style="display: none;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Reçete Zorunludur!</strong> Lens veya Contact Lens satışları için reçete seçimi zorunludur.
+                    </div>
+                    
+                    <div id="prescriptionLoading" class="text-center py-3" style="display: none;">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading prescriptions...</p>
+                    </div>
+                    <div id="noPrescriptions" class="alert alert-warning" style="display: none;">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        This customer has no prescriptions. 
+                        <a href="#" id="createPrescriptionLinkInline" target="_blank">Create one now</a>
+                    </div>
+                    <div id="prescriptionDropdownContainer" style="display: none;">
+                        <select name="PrescriptionID" id="prescriptionSelect" class="form-select">
+                            <option value="">-- No Prescription (Walk-in Sale) --</option>
+                        </select>
+                        <small class="text-muted" id="prescriptionHint">Select a prescription for lens/contact lens purchases</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Selection -->
             <div class="card mb-4">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <strong>Products</strong>
+                    <strong><i class="bi bi-box me-2"></i>Products</strong>
                     <button type="button" class="btn btn-light btn-sm" onclick="addProductRow()">
                         <i class="bi bi-plus-circle me-1"></i>Add Product
                     </button>
@@ -68,12 +106,23 @@
         <div class="col-md-4">
             <div class="card sticky-top" style="top: 20px;">
                 <div class="card-header bg-dark text-white">
-                    <strong>Sale Summary</strong>
+                    <strong><i class="bi bi-receipt me-2"></i>Sale Summary</strong>
                 </div>
                 <div class="card-body">
+                    <div id="selectedCustomerInfo" style="display: none;">
+                        <p class="mb-2">
+                            <strong>Customer:</strong> 
+                            <span id="selectedCustomerName"></span>
+                        </p>
+                        <p class="mb-2" id="selectedPrescriptionInfo" style="display: none;">
+                            <strong>Prescription:</strong> 
+                            <span id="selectedPrescriptionText"></span>
+                        </p>
+                        <hr />
+                    </div>
                     <p class="text-muted mb-3">
                         <i class="bi bi-info-circle me-1"></i>
-                        Products will be added to the sale. Total will be calculated automatically including tax.
+                        Products will be added to the sale. Total will be calculated automatically including tax (20%).
                     </p>
                     <hr />
                     <button type="submit" class="btn btn-success btn-lg w-100">
@@ -94,6 +143,127 @@
             <text><option value="@product.Value">@Html.Raw(product.Text?.Replace("'", "\\'"))</option></text>
         }
     `;
+    
+    // Product Type Map: ProductID -> ProductTypeID
+    // 3 = ContactLens, 4 = Lens (bunlar için prescription zorunlu)
+    var productTypeMap = @Html.Raw(productTypeMap);
+    
+    // Check if any selected product requires prescription
+    function checkPrescriptionRequired() {
+        var productSelects = document.querySelectorAll('select[name="ProductIDs"]');
+        var requiresPrescription = false;
+        
+        productSelects.forEach(function(select) {
+            var productId = parseInt(select.value);
+            if (productId && productTypeMap[productId]) {
+                var typeId = productTypeMap[productId];
+                if (typeId === 3 || typeId === 4) { // ContactLens or Lens
+                    requiresPrescription = true;
+                }
+            }
+        });
+        
+        var prescriptionHeader = document.getElementById('prescriptionHeader');
+        var prescriptionTitle = document.getElementById('prescriptionTitle');
+        var prescriptionWarning = document.getElementById('prescriptionRequiredWarning');
+        var prescriptionSelect = document.getElementById('prescriptionSelect');
+        var prescriptionHint = document.getElementById('prescriptionHint');
+        
+        if (requiresPrescription) {
+            prescriptionHeader.className = 'card-header bg-danger text-white d-flex justify-content-between align-items-center';
+            prescriptionTitle.textContent = 'Prescription (ZORUNLU)';
+            prescriptionWarning.style.display = 'block';
+            prescriptionSelect.required = true;
+            prescriptionSelect.classList.add('border-danger');
+            prescriptionHint.innerHTML = '<span class="text-danger fw-bold">⚠️ Lens/Contact Lens satışı için reçete seçimi zorunludur!</span>';
+        } else {
+            prescriptionHeader.className = 'card-header bg-info text-white d-flex justify-content-between align-items-center';
+            prescriptionTitle.textContent = 'Prescription (Optional)';
+            prescriptionWarning.style.display = 'none';
+            prescriptionSelect.required = false;
+            prescriptionSelect.classList.remove('border-danger');
+            prescriptionHint.textContent = 'Select a prescription for lens/contact lens purchases';
+        }
+    }
+    
+    // Add event listener for product selection changes
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'ProductIDs') {
+            checkPrescriptionRequired();
+        }
+    });
+
+    // Customer selection change handler
+    document.getElementById('customerSelect').addEventListener('change', function() {
+        var customerId = this.value;
+        var customerName = this.options[this.selectedIndex].text;
+        var prescriptionSection = document.getElementById('prescriptionSection');
+        var prescriptionLoading = document.getElementById('prescriptionLoading');
+        var noPrescriptions = document.getElementById('noPrescriptions');
+        var prescriptionDropdown = document.getElementById('prescriptionDropdownContainer');
+        var prescriptionSelect = document.getElementById('prescriptionSelect');
+        var selectedCustomerInfo = document.getElementById('selectedCustomerInfo');
+        var createLink = document.getElementById('createPrescriptionLink');
+        var createLinkInline = document.getElementById('createPrescriptionLinkInline');
+        
+        if (customerId) {
+            // Show prescription section
+            prescriptionSection.style.display = 'block';
+            prescriptionLoading.style.display = 'block';
+            noPrescriptions.style.display = 'none';
+            prescriptionDropdown.style.display = 'none';
+            
+            // Update create prescription links
+            createLink.href = '/Prescription/Create?customerId=' + customerId;
+            createLinkInline.href = '/Prescription/Create?customerId=' + customerId;
+            
+            // Show customer info in summary
+            selectedCustomerInfo.style.display = 'block';
+            document.getElementById('selectedCustomerName').textContent = customerName;
+            
+            // Fetch prescriptions for this customer
+            fetch('/Prescription/GetByCustomer?customerId=' + customerId)
+                .then(response => response.json())
+                .then(data => {
+                    prescriptionLoading.style.display = 'none';
+                    
+                    if (data.length === 0) {
+                        noPrescriptions.style.display = 'block';
+                    } else {
+                        prescriptionDropdown.style.display = 'block';
+                        prescriptionSelect.innerHTML = '<option value="">-- No Prescription (Walk-in Sale) --</option>';
+                        
+                        data.forEach(function(p) {
+                            var option = document.createElement('option');
+                            option.value = p.id;
+                            option.textContent = p.display;
+                            prescriptionSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    prescriptionLoading.style.display = 'none';
+                    noPrescriptions.style.display = 'block';
+                    console.error('Error loading prescriptions:', error);
+                });
+        } else {
+            prescriptionSection.style.display = 'none';
+            selectedCustomerInfo.style.display = 'none';
+        }
+    });
+    
+    // Prescription selection change handler
+    document.getElementById('prescriptionSelect').addEventListener('change', function() {
+        var prescriptionInfo = document.getElementById('selectedPrescriptionInfo');
+        var prescriptionText = document.getElementById('selectedPrescriptionText');
+        
+        if (this.value) {
+            prescriptionInfo.style.display = 'block';
+            prescriptionText.textContent = this.options[this.selectedIndex].text;
+        } else {
+            prescriptionInfo.style.display = 'none';
+        }
+    });
 
     function addProductRow() {
         var row = document.createElement('div');
@@ -114,16 +284,42 @@
             </div>
         `;
         document.getElementById('productRows').appendChild(row);
+        checkPrescriptionRequired();
     }
 
     function removeProductRow(btn) {
         var rows = document.querySelectorAll('.product-row');
         if (rows.length > 1) {
             btn.closest('.product-row').remove();
+            checkPrescriptionRequired();
         } else {
             alert('At least one product is required.');
         }
     }
+    
+    // Form submit validation
+    document.getElementById('saleForm').addEventListener('submit', function(e) {
+        var productSelects = document.querySelectorAll('select[name="ProductIDs"]');
+        var requiresPrescription = false;
+        
+        productSelects.forEach(function(select) {
+            var productId = parseInt(select.value);
+            if (productId && productTypeMap[productId]) {
+                var typeId = productTypeMap[productId];
+                if (typeId === 3 || typeId === 4) {
+                    requiresPrescription = true;
+                }
+            }
+        });
+        
+        if (requiresPrescription) {
+            var prescriptionValue = document.getElementById('prescriptionSelect').value;
+            if (!prescriptionValue) {
+                e.preventDefault();
+                alert('⚠️ Lens veya Contact Lens satışları için reçete seçimi zorunludur!\n\nLütfen bir reçete seçin veya yeni reçete oluşturun.');
+                return false;
+            }
+        }
+    });
 </script>
 }
-

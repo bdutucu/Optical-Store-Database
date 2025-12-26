@@ -1,33 +1,217 @@
 @model ESC_GULEN_OPTIK_Web.Models.Customer
-@{ ViewData["Title"] = "Customer Details"; }
+@{
+    ViewData["Title"] = "Customer Details";
+    var prescriptions = ViewBag.Prescriptions as List<ESC_GULEN_OPTIK_Web.Models.Prescription> ?? new List<ESC_GULEN_OPTIK_Web.Models.Prescription>();
+    var recentTransactions = ViewBag.RecentTransactions as System.Data.DataTable;
+}
 
-<h2>Customer Details</h2>
-<hr />
-
-<div class="card">
-    <div class="card-header"><strong>@Model.FullName</strong></div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">ID</dt>
-            <dd class="col-sm-9">@Model.CustomerID</dd>
-
-            <dt class="col-sm-3">National ID</dt>
-            <dd class="col-sm-9">@Model.NationalID</dd>
-
-            <dt class="col-sm-3">Email</dt>
-            <dd class="col-sm-9">@(Model.MailAddress ?? "-")</dd>
-
-            <dt class="col-sm-3">Insurance</dt>
-            <dd class="col-sm-9">@(Model.InsuranceInfo ?? "-")</dd>
-
-            <dt class="col-sm-3">Registered By</dt>
-            <dd class="col-sm-9">@Model.StaffName</dd>
-        </dl>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person-circle me-2"></i>@Model.FullName</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.CustomerID" class="btn btn-warning">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
     </div>
 </div>
 
-<div class="mt-3">
-    <a asp-action="Edit" asp-route-id="@Model.CustomerID" class="btn btn-warning">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</div>
+<div class="row">
+    <!-- Customer Info -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <strong><i class="bi bi-person-vcard me-2"></i>Customer Information</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Customer ID</dt>
+                    <dd class="col-sm-7"><strong>#@Model.CustomerID</strong></dd>
 
+                    <dt class="col-sm-5">National ID</dt>
+                    <dd class="col-sm-7">@Model.NationalID</dd>
+
+                    <dt class="col-sm-5">Email</dt>
+                    <dd class="col-sm-7">@(Model.MailAddress ?? "-")</dd>
+
+                    <dt class="col-sm-5">Insurance</dt>
+                    <dd class="col-sm-7">@(Model.InsuranceInfo ?? "-")</dd>
+
+                    <dt class="col-sm-5">Registered By</dt>
+                    <dd class="col-sm-7">@Model.StaffName</dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group btn-group-sm w-100">
+                    <a asp-controller="Sales" asp-action="CreateSale" class="btn btn-success">
+                        <i class="bi bi-cart-plus me-1"></i>New Sale
+                    </a>
+                    <a asp-controller="Prescription" asp-action="Create" asp-route-customerId="@Model.CustomerID" class="btn btn-info">
+                        <i class="bi bi-file-medical me-1"></i>New Prescription
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prescriptions -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <strong><i class="bi bi-file-medical me-2"></i>Prescriptions</strong>
+                <a asp-controller="Prescription" asp-action="Create" asp-route-customerId="@Model.CustomerID" class="btn btn-light btn-sm">
+                    <i class="bi bi-plus-circle me-1"></i>Add
+                </a>
+            </div>
+            <div class="card-body">
+                @if (prescriptions.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-file-medical display-4"></i>
+                        <p class="mt-2">No prescriptions yet.</p>
+                        <a asp-controller="Prescription" asp-action="Create" asp-route-customerId="@Model.CustomerID" class="btn btn-info btn-sm">
+                            Create First Prescription
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Doctor</th>
+                                    <th>Right Eye</th>
+                                    <th>Left Eye</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in prescriptions)
+                                {
+                                    <tr>
+                                        <td><strong>@p.DateOfPrescription.ToString("dd.MM.yyyy")</strong></td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(p.DoctorName))
+                                            {
+                                                <span class="badge bg-info">Internal</span>
+                                            }
+                                            else
+                                            {
+                                                @p.DoctorName
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (p.Right_SPH.HasValue)
+                                            {
+                                                <small>@p.Right_SPH.Value.ToString("+0.00;-0.00") / @(p.Right_CYL?.ToString("+0.00;-0.00") ?? "0") × @(p.Right_AX ?? 0)°</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (p.Left_SPH.HasValue)
+                                            {
+                                                <small>@p.Left_SPH.Value.ToString("+0.00;-0.00") / @(p.Left_CYL?.ToString("+0.00;-0.00") ?? "0") × @(p.Left_AX ?? 0)°</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Prescription" asp-action="Details" asp-route-id="@p.PrescriptionID" class="btn btn-outline-info btn-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end mt-2">
+                        <a asp-controller="Prescription" asp-action="Index" asp-route-customerId="@Model.CustomerID" class="btn btn-outline-info btn-sm">
+                            View All Prescriptions →
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <strong><i class="bi bi-receipt me-2"></i>Recent Transactions</strong>
+                <a asp-controller="Sales" asp-action="Index" asp-route-customerId="@Model.CustomerID" class="btn btn-light btn-sm">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                @if (recentTransactions == null || recentTransactions.Rows.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-receipt display-4"></i>
+                        <p class="mt-2">No transactions yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Total</th>
+                                    <th>Balance</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (System.Data.DataRow row in recentTransactions.Rows)
+                                {
+                                    var balance = Convert.ToDecimal(row["RemainingBalance"]);
+                                    <tr>
+                                        <td>#@row["TransactionID"]</td>
+                                        <td>@Convert.ToDateTime(row["TransactionDate"]).ToString("dd.MM.yyyy")</td>
+                                        <td>
+                                            @if (row["TransactionTypeName"].ToString() == "SALE")
+                                            {
+                                                <span class="badge bg-primary">SALE</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">REPAIR</span>
+                                            }
+                                        </td>
+                                        <td><strong>@Convert.ToDecimal(row["TotalAmount"]).ToString("N2") ₺</strong></td>
+                                        <td>
+                                            @if (balance > 0)
+                                            {
+                                                <span class="text-danger">@balance.ToString("N2") ₺</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">PAID</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Sales" asp-action="Details" asp-route-id="@row["TransactionID"]" class="btn btn-outline-success btn-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

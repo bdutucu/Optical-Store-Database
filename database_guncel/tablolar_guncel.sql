@@ -99,15 +99,7 @@ CREATE TABLE ContactLenses (
     ContactLensSerialNo NVARCHAR(50) NOT NULL UNIQUE,
     Colour NVARCHAR(50),
     Type NVARCHAR(50), -- Örn: Toric, Multifocal
-    -- Measurements Of Right Eye 
-    Right_SPH DECIMAL(4, 2), -- Örn: -1.25
-    Right_CYL DECIMAL(4, 2), -- Örn: -0.75
-    Right_AX INT,            -- Örn: 180
-
-    -- Measurements Of Left Eye 
-    Left_SPH DECIMAL(4, 2),
-    Left_CYL DECIMAL(4, 2),
-    Left_AX INT, 
+    -- Göz ölçüleri kaldırıldı - artık Prescription tablosunda tutulacak
 
     CONSTRAINT FK_ContactLenses_Product FOREIGN KEY (ProductID) 
         REFERENCES Product(ProductID)
@@ -117,16 +109,7 @@ CREATE TABLE Lenses (
     ProductID INT PRIMARY KEY,
     LensSerialNo NVARCHAR(50) NOT NULL UNIQUE,
     Type NVARCHAR(50), -- Örn: Progressive, Single Vision
-
-    -- Measurements Of Right Eye
-    Right_SPH DECIMAL(4, 2),
-    Right_CYL DECIMAL(4, 2),
-    Right_AX INT,
-
-    -- Measurements Of Left Eye
-    Left_SPH DECIMAL(4, 2),
-    Left_CYL DECIMAL(4, 2),
-    Left_AX INT,  
+    -- Göz ölçüleri kaldırıldı - artık Prescription tablosunda tutulacak
 
     CONSTRAINT FK_Lenses_Product FOREIGN KEY (ProductID) 
         REFERENCES Product(ProductID)

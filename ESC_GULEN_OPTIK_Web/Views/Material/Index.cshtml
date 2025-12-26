@@ -1,0 +1,82 @@
+@model List<dynamic>
+@{ ViewData["Title"] = "Materials Management"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-gem me-2"></i>Materials Management</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Add Material
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <strong>Product Materials</strong>
+        <small class="float-end">Used for Frames and Sunglasses</small>
+    </div>
+    <div class="card-body">
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-gem display-1 text-muted"></i>
+                <p class="lead mt-3">No materials defined yet.</p>
+                <a asp-action="Create" class="btn btn-primary">Add First Material</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Material Name</th>
+                            <th>Description</th>
+                            <th width="150">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MaterialID</td>
+                                <td><strong>@item.MaterialName</strong></td>
+                                <td>@(string.IsNullOrEmpty((string)item.Description) ? "-" : item.Description)</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Edit" asp-route-id="@item.MaterialID" class="btn btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.MaterialID" method="post" style="display:inline"
+                                              onsubmit="return confirm('Are you sure you want to delete this material?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+

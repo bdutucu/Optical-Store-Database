@@ -44,13 +44,6 @@
                         <select asp-for="PaymentType" class="form-select" asp-items="paymentTypes" id="paymentTypeSelect"></select>
                     </div>
 
-                    <!-- Cash specific fields -->
-                    <div id="cashFields" class="mb-3" style="display:none;">
-                        <label asp-for="ReceivedBy" class="form-label">Received By</label>
-                        <input asp-for="ReceivedBy" class="form-control" placeholder="Staff name receiving cash" />
-                        <small class="text-muted">Name of staff member receiving the cash payment</small>
-                    </div>
-
                     <!-- Credit Card specific fields -->
                     <div id="creditCardFields" class="mb-3" style="display:none;">
                         <label asp-for="CardOwner" class="form-label">Card Owner Name</label>
@@ -73,7 +66,7 @@
                 <strong>💡 Payment Info</strong>
             </div>
             <div class="card-body">
-                <p><strong>Cash:</strong> For cash payments, enter the staff member's name who received the payment.</p>
+                <p><strong>Cash:</strong> Payment will be recorded under the logged-in staff member's name automatically.</p>
                 <p><strong>Credit Card:</strong> For card payments, enter the cardholder's name for record keeping.</p>
                 <hr />
                 <p class="text-muted small">
@@ -89,17 +82,13 @@
     <script>
         document.getElementById('paymentTypeSelect').addEventListener('change', function() {
             var type = this.value;
-            var cashFields = document.getElementById('cashFields');
             var creditCardFields = document.getElementById('creditCardFields');
             
             // Hide all
-            cashFields.style.display = 'none';
             creditCardFields.style.display = 'none';
             
             // Show based on type
-            if (type === 'Cash') {
-                cashFields.style.display = 'block';
-            } else if (type === 'CreditCard') {
+            if (type === 'CreditCard') {
                 creditCardFields.style.display = 'block';
             }
         });

@@ -1,0 +1,40 @@
+@{ ViewData["Title"] = "Edit Material"; }
+
+<h2><i class="bi bi-pencil me-2"></i>Edit Material</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@ViewBag.MaterialID" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Material ID</label>
+                        <input type="text" class="form-control" value="#@ViewBag.MaterialID" disabled />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Material Name *</label>
+                        <input type="text" name="MaterialName" class="form-control" required 
+                               value="@ViewBag.MaterialName" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="Description" class="form-control" rows="3">@ViewBag.Description</textarea>
+                    </div>
+
+                    <hr />
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i>Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

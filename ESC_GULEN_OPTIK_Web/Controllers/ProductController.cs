@@ -182,6 +182,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
             {
                 // Use proc_AddProduct stored procedure with OUTPUT parameter
                 // Material is added separately for multiple materials
+                // Note: Eye measurements removed - now stored in Prescription table
                 int newId = _dbcon.executeStoredProcedureWithOutput(
                     "proc_AddProduct",
                     "@NewProductID",
@@ -193,12 +194,6 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                     ("@ColourCode", (object?)product.ColorInfo ?? DBNull.Value),
                     ("@Size", (object?)product.Size ?? DBNull.Value),
                     ("@LensType", (object?)product.LensType ?? DBNull.Value),
-                    ("@Right_SPH", product.Right_SPH ?? (object)DBNull.Value),
-                    ("@Right_CYL", product.Right_CYL ?? (object)DBNull.Value),
-                    ("@Right_AX", product.Right_AX ?? (object)DBNull.Value),
-                    ("@Left_SPH", product.Left_SPH ?? (object)DBNull.Value),
-                    ("@Left_CYL", product.Left_CYL ?? (object)DBNull.Value),
-                    ("@Left_AX", product.Left_AX ?? (object)DBNull.Value),
                     ("@MaterialID", DBNull.Value),  // Will add materials separately
                     ("@MaterialPart", DBNull.Value)
                 );
@@ -262,12 +257,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                 ColorInfo = row["ColourCode"] == DBNull.Value ? null : row["ColourCode"].ToString(),
                 Size = row["Size"] == DBNull.Value ? null : row["Size"].ToString(),
                 LensType = row["LensType"] == DBNull.Value ? null : row["LensType"].ToString(),
-                Right_SPH = row["Right_SPH"] == DBNull.Value ? null : Convert.ToDecimal(row["Right_SPH"]),
-                Right_CYL = row["Right_CYL"] == DBNull.Value ? null : Convert.ToDecimal(row["Right_CYL"]),
-                Right_AX = row["Right_AX"] == DBNull.Value ? null : Convert.ToInt32(row["Right_AX"]),
-                Left_SPH = row["Left_SPH"] == DBNull.Value ? null : Convert.ToDecimal(row["Left_SPH"]),
-                Left_CYL = row["Left_CYL"] == DBNull.Value ? null : Convert.ToDecimal(row["Left_CYL"]),
-                Left_AX = row["Left_AX"] == DBNull.Value ? null : Convert.ToInt32(row["Left_AX"]),
+                // Note: Eye measurements removed from Product - now in Prescription table
                 CurrentMaterials = new List<ProductMaterial>()
             };
 
@@ -325,6 +315,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
             try
             {
                 // Use proc_UpdateProduct stored procedure
+                // Note: Eye measurements removed - now stored in Prescription table
                 _dbcon.getStoredProcedure("proc_UpdateProduct",
                     ("@ProductID", product.ProductID),
                     ("@Brand", product.Brand),
@@ -334,13 +325,7 @@ namespace ESC_GULEN_OPTIK_Web.Controllers
                     ("@ModelOrSerial", (object?)product.ModelOrSerial ?? DBNull.Value),
                     ("@ColourCode", (object?)product.ColorInfo ?? DBNull.Value),
                     ("@Size", (object?)product.Size ?? DBNull.Value),
-                    ("@LensType", (object?)product.LensType ?? DBNull.Value),
-                    ("@Right_SPH", product.Right_SPH ?? (object)DBNull.Value),
-                    ("@Right_CYL", product.Right_CYL ?? (object)DBNull.Value),
-                    ("@Right_AX", product.Right_AX ?? (object)DBNull.Value),
-                    ("@Left_SPH", product.Left_SPH ?? (object)DBNull.Value),
-                    ("@Left_CYL", product.Left_CYL ?? (object)DBNull.Value),
-                    ("@Left_AX", product.Left_AX ?? (object)DBNull.Value)
+                    ("@LensType", (object?)product.LensType ?? DBNull.Value)
                 );
 
                 // Update materials (only for FRAME=1 and SUNGLASSES=2)

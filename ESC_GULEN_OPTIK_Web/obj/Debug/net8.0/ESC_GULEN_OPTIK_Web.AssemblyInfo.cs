@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ESC_GULEN_OPTIK_Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb921980888182bde57098946692464551f8c823")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86c4b7933a429ea2e3af72c2b8c1e2353f671eba")]
 [assembly: System.Reflection.AssemblyProductAttribute("ESC_GULEN_OPTIK_Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ESC_GULEN_OPTIK_Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
